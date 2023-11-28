@@ -1,0 +1,301 @@
+﻿@model FieldProductViewModel
+@using IntegrationService.ViewModels.FieldProductsViewModels;
+
+@{
+    ViewData["Title"] = "Edit";
+    ViewBag.BodyClass = "field-product-edit";
+}
+
+
+
+<div class="card-body">
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="card-title">Είδη</h2>
+            <h6 class="card-subtitle mb-2">Επεξεργασία Παραμετρικών Πεδίων</h6>
+        </div>
+        <div class="col-md-6 text-end"><a asp-action="Index" class="return-link"><i class="icon-arrow-left-small"></i> <span>Επιστροφή</span></a></div>
+    </div>
+
+    <div class="row">
+        <div class="col mb-50">
+
+
+
+            <div class="row">
+                <div class="col-md-6">
+                    <form id="products-edit-form sku" asp-action="Edit" class="edit-form-layout sku" method="post">
+                        <input type="hidden" id="productId" asp-for="ProductId" value="@Model.ProductId" />
+                        @* SKU *@
+                        <div class="form-group d-flex flex-row edit-cr sku">
+                            <label asp-for="Sku" class="control-label pseudo"></label>
+                            @Model.Sku
+                            <input type="hidden" asp-for="Sku" class="form-control" />
+                            <span asp-validation-for="Sku" class="text-danger"></span>
+                        </div>
+
+                        @* Title_Import *@
+                        <div class="form-group d-flex flex-row edit-cr sku">
+                            <label asp-for="Title_Import" class="control-label pseudo"></label>
+                            @Model.Title_Import
+                            <input type="hidden" asp-for="Title_Import" class="form-control" />
+                            <span asp-validation-for="Title_Import" class="text-danger"></span>
+                        </div>
+
+                        @* Status *@
+                        <div class="form-group d-flex flex-row edit-cr sku">
+                            <label asp-for="Status" class="control-label pseudo"></label>
+                            @Model.Status
+                            <input type="hidden" asp-for="Status" class="form-control" />
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+
+                        @* Step *@
+                        <div class="form-group d-flex flex-row edit-cr sku">
+                            <label asp-for="Step" class="control-label pseudo"></label>
+                            @Model.Step
+                            <input type="hidden" asp-for="Step" class="form-control" />
+                            <span asp-validation-for="Step" class="text-danger"></span>
+                        </div>
+
+                        @* Description_Import *@
+                        <div class="form-group d-flex flex-row edit-cr sku">
+                            <label asp-for="Description_Import" class="control-label pseudo"></label>
+                            @Model.Description_Import
+                            <input type="hidden" asp-for="Description_Import" class="form-control" />
+                            <span asp-validation-for="Description_Import" class="text-danger"></span>
+                        </div>
+
+                        @* ModifiedOn (Assuming this is a DateTime field) *@
+                        <div class="form-group d-flex flex-row edit-cr sku">
+                            <label asp-for="ModifiedOn" class="control-label pseudo"></label>
+                            @Model.ModifiedOn
+                            <input type="hidden" asp-for="ModifiedOn" class="form-control" />
+                            <span asp-validation-for="ModifiedOn" class="text-danger"></span>
+                        </div>
+                        <hr style="margin:9px 0;" />
+                        <div class="form-insider">
+                            @foreach (var item in Model.Fields.OrderBy(x => x.Order))
+                            {
+                               @* <div class="form-group d-flex edit-field fps dooo">
+                                    @Html.TextBoxFor(a => item.FieldName, new{ @class = "hidden",@readonly = "readonly",@style="border: 0px;background: var(--color-neutral-1);" })*@
+                                    @if (item.DomGroupDesc == "TrueOrFalse")
+                                    {
+                                        <div class="form-group d-flex edit-field fps dooo">
+                                            @Html.TextBoxFor(a => item.FieldName, new{ @class = "hidden",@readonly = "readonly",@style="border: 0px;background: var(--color-neutral-1);" })
+                                        <select id="@item.FieldId" name="fields" style="" class="edit-dropdown default-button dropdown-toggle">
+                                            @foreach (var value in item.DomValues.OrderBy(x => x.Value))
+                                            {
+                                                var stringValue = "{" + $"ProductId : \"{Model.ProductId}\",FieldId : \"{@item.FieldId}\",Value : \"{@value.Value}\"" + "}";
+                                                if (value.Value == item.Value)
+                                                {
+                                                    <option value=@stringValue selected>@value.Value</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value=@stringValue>@value.Value</option>
+                                                }
+                                            }
+                                        </select>
+                                        </div>
+                                    }
+                                    else if (item.DomGroupDesc == "Entity")
+                                    {
+                                        var stringValue = "{" + $"ProductId : \"{Model.ProductId}\",FieldId : \"{@item.FieldId}\",Value : \"{@item.Value}\"" + "}";
+                                        <div class="form-group d-flex edit-field fps dooo">
+                                            @Html.TextBoxFor(a => item.FieldName, new{ @class = "hidden",@readonly = "readonly",@style="border: 0px;background: var(--color-neutral-1);" })
+                                        <input type="hidden" id="entity" value="@item.DomValues.FirstOrDefault().Value" name="@item.FieldId" />
+                                        
+                                        <select name="fields" id="categories">
+                                            @if (!(@item.Value == string.Empty || item.Value == null))
+                                            {
+                                                <option id="entityDesc" value="@stringValue" selected>@item.Value</option>
+                                            }
+                                        </select>
+                                        </div>
+                                        <div class="form-group d-flex edit-field fps dooo">
+                                        <span class="" style="border: 0px;background: var(--color-neutral-1);color:black;">Description_Category</span>
+                                        @*/<input id="catDescValue" type="text" asp-for="Description_Category" value="@Model.Description_Category" style="width: 100%;height: 70px;border-radius: 4px;resize: none;border: 1px solid var(--color-neutral-4);padding: 0 8px;" readonly />*@
+                                        </div>
+                                    }
+                                    else if (item.DomGroupDesc == "EntityLabel")
+                                    {
+                                    @* var stringValue = "{" + $"ProductId : \"{Model.ProductId}\",FieldId : \"{@item.FieldId}\",Value : \"{@item.Value}\"" + "}";
+                                        <div class="form-group d-flex edit-field fps dooo">
+                                            @Html.TextBoxFor(a => item.FieldName, new{ @class = "hidden",@readonly = "readonly",@style="border: 0px;background: var(--color-neutral-1);" })
+                                        
+                                        <input type="text" id="catDescValue" value="@item.Value" name="@item.FieldId" style="width: 100%;height: 70px;border-radius: 4px;resize: none;border: 1px solid var(--color-neutral-4);padding: 0 8px;" />
+                                        <input type="hidden" id="hiddenCatDescValue" value="@stringValue" name="fields" />
+                                        </div>*@
+                                    }
+                                    else if (item.DomGroupDesc == "FreeText")
+                                    {
+                                        var stringValue = "{" + $"ProductId : \"{Model.ProductId}\",FieldId : \"{@item.FieldId}\",Value : \"{@item.Value}\"" + "}";
+                                        <div class="form-group d-flex edit-field fps dooo">
+                                            @Html.TextBoxFor(a => item.FieldName, new{ @class = "hidden",@readonly = "readonly",@style="border: 0px;background: var(--color-neutral-1);" })
+                                       
+                                        <textarea id="userInput_@item.FieldId" asp-for="@item.Value" name="@item.FieldId" class="textarea-skl" style="width:215px; height: 29px; border-radius: 4px; resize: none;border: 1px solid var(--color-neutral-4);padding:0 8px;" onchange="updateHiddenField('@item.FieldId')"></textarea>
+
+                                        <input type="hidden" id="hiddenValue_@item.FieldId" value="@stringValue" name="fields" />
+                                        </div>
+                                    }
+                            }
+                            <div class="form-group d-flex justify-content-between edit-field fps">
+                                <label asp-for="IsCompleted" class="control-label pseudo"></label>
+                                <select id="isCompleted" asp-for="IsCompleted" style="width:215px;height:28px;border:1px solid var(--color-neutral-4);background:#fff;text-align:left;padding:0;" class="edit-dropdown default-button dropdown-toggle">
+                                    @foreach (var option in new[]
+                                    {
+                                    new { Value = "true", Text = "True" },
+                                    new { Value = "false", Text = "False" }
+                                                            })
+                                    {
+                                        @if (Model.IsCompleted.ToString() == option.Text)
+                                        {
+                                            <option value="@option.Value" selected>@option.Text</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@option.Value">@option.Text</option>
+                                        }
+                                    }
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <ul class="filter-btn-group f-14">
+                                <li>
+                                    <input class="main-btn primary-btn-outline btn-hover d-flex align-items-center" style="gap:5px;height:auto;" value="Αποθήκευση" type="submit">
+                                    @*<i class="icon-plus"></i>*@
+                                </li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+
+
+
+        </div><!--/col-->
+    </div><!--/row-->
+</div><!--/CARD-BODY-->
+@section Scripts {
+    <script src="~/js/skeleton/lib/select-2-4.1.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#categories').change(function () {
+                var e = document.getElementById("categories");
+                var value = e.value;
+                var text = e.options[e.selectedIndex].text;
+                const textArray = text.split("-");
+                var fieldId = $('#catDescValue').attr('name');
+                var productId = $('#productId').val();
+                var value = "{" + "ProductId : " + "\"" + productId + "\"" + ",FieldId : " + "\"" + fieldId + "\"" + ",Value : " + "\"" + textArray[1] + "\"" + "}";
+                $('#catDescValue').val(textArray[1]);
+                $('#hiddenCatDescValue').val(value);
+            });
+        });
+
+        //function getValues(e) {
+
+        //    console.log('mothafucka');
+        //    e.preventDefault();
+        //    var formTextAreas = $("#products-edit-form textarea");
+        //    formTextAreas.each(function(){
+        //            var textArea =  $(this)
+        //            var fieldId = textArea.attr('name');
+        //            var value = textArea.val();
+        //            var productId = $('#productId').val();
+        //            var hiddenValue = "{" + "ProductId : " + "\"" + productId + "\"" + ",FieldId : " + "\"" + fieldId + "\"" + ",Value : " + "\"" + value + "\"" + "}"
+        //            textArea.next().val(hiddenValue);
+        //    });
+        //    $("#products-edit-form").submit();
+
+        //}
+        function updateHiddenField(fieldId) {
+            var userInput = document.getElementById("userInput_" + fieldId);
+            var hiddenInputElement = document.getElementById("hiddenValue_" + fieldId);
+            var productId = $('#productId').val();
+            var hiddenValue = "{" + "ProductId : " + "\"" + productId + "\"" + ",FieldId : " + "\"" + fieldId + "\"" + ",Value : " + "\"" + userInput.value + "\"" + "}";
+
+            hiddenInputElement.value = hiddenValue;
+        }
+
+        function setCategoryDescription(text) {
+            $('#catDescValue').val(text);
+        }
+
+
+        function getUrl() {
+            var url = '';
+            if ($('#entity').val() == 'Category') {
+                var url = "/Categories/GetCategories";
+            }
+            return url;
+        }
+        function getItem() {
+            var item = '';
+            if ($('#entity').val() == 'Category') {
+                var item = "#categories";
+            }
+            return item;
+        }
+        $(getItem()).select2({
+            placeholder: "Select Category",
+            theme: "bootstrap4",
+            allowClear: true,
+            ajax: {
+                url: getUrl(),
+                contentType: "application/json; charset=utf-8",
+                data: function (params) {
+                    var query =
+                    {
+                        term: params.term,
+                    };
+                    return query;
+                },
+                processResults: function (result) {
+                    return {
+                        results: $.map(result, function (item) {
+                            var fieldId = $('#entity').attr('name');
+                            var productId = $('#productId').val();
+                            var value = "{" + "ProductId : " + "\"" + productId + "\"" + ",FieldId : " + "\"" + fieldId + "\"" + ",Value : " + "\"" + item.value + "\"" + "}";
+                            return {
+                                id: value,
+                                text: item.value + '-' + item.text
+                            };
+                        }),
+                    };
+                }
+            }
+        });
+    </script>
+
+
+
+    <script>
+        $(document).ready(function () {
+
+            $(".edit-dropdown").select2({
+                minimumResultsForSearch: -1
+            });
+
+
+
+
+        });
+
+
+    </script>
+
+
+
+
+
+
+
+}

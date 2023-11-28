@@ -1,0 +1,541 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+
+
+<script>
+	
+	$(document).ready(function () {
+		
+		$("#ddlColumn").change(function () {
+			$("#tdAscDesc").show(); 
+			$("#btnAddSortToBasket").show();
+		});
+
+		$("#btnAddSortToBasket").click(function (event) {
+			event.preventDefault();
+
+			var field = $("#ddlColumn option:selected").text();
+			var ddlFieldValue = $("#ddlColumn option:selected").val();
+			var selectedObjectValue = JSON.parse(ddlFieldValue);
+			var selectedItems = [];
+			selectedItems.push($("#ddlAscDesc option:selected").val());
+			var foundValue = selectedItems.some(function (element) {
+				return element === "";
+			});
+
+			if (selectedItems.length === 0 || foundValue) {
+				console.log("selectedItems is empty. Execution stopped.");
+				return;
+			}
+			var selectedItemsStr = selectedItems.join(", ");
+			var data = { id: selectedObjectValue.Id, field: field, value: selectedItems, type: selectedObjectValue.Type, group: selectedObjectValue.Group };
+			$.ajax({
+				type: "POST",
+				url: "/Basket/AddToBasket" + "?dash=" + encodeURIComponent(@ViewData["dashId"]),
+				data: data,
+				success: function () {
+					$.get("/Basket/GetBasketItems", function (d) {
+						$("#filters").empty();
+						$.each(d, function (index, item) {
+							var valueStr;
+							if (Array.isArray(item.value)) {
+								if (item.value.length > 1) {
+									valueStr = item.value.join(", ");
+								} else {
+									valueStr = item.value[0];
+								}
+							} else {
+								valueStr = item.value;
+							}
+							//var tableRow = "<tr><td>" + item.field + "</td><td>: </td><td>" + valueStr + "</td><td style='display: none;'>" + item.type + "</td><td><form method='post'  ><input type='hidden' id='rowField' name='Field' value='" + item.field + "' /><input type='hidden' id='rowValue' name='Value' value='" + item.value + "' /><button type='button' class='btn btn-outline-secondary' onclick='removeItem(this)'><span class='bi bi-x'></span></button></form></td></tr>";
+							var tableRow = getNewFilterHtml(item, valueStr);
+							$("#filters").append(tableRow);
+						});
+
+					});
+				},
+				error: function () {
+					alert("Error adding item to basket.");
+				}
+			});
+		});
+		$("#ddlField").change(function () {
+			//console.log($(this).val());
+			console.log($("#ddlField option:selected").text());
+			var selectedObjectValue = JSON.parse($(this).val());
+			var fieldId = selectedObjectValue.Id;
+			console.log(fieldId);
+			console.log(selectedObjectValue.Group);
+
+			//show hide add button
+			var btnAddToBasket = $("#btnAddToBasket");
+			if (btnAddToBasket.length) {
+				if (selectedObjectValue) {
+					btnAddToBasket.show();
+				} else {
+					btnAddToBasket.hide();
+				}
+			}
+			if (fieldId !== "") {
+				if (selectedObjectValue.Group === "Entity") {
+					var url = "";
+					var text = "";
+					var length = 3;
+					if ($("#ddlField option:selected").text() === 'Sku') {
+						url = '/FieldProducts/GetProducts';
+						text = 'Select Product';
+						
+					}
+					else if ($("#ddlField option:selected").text() === 'WarehouseID') {
+						url = '/FieldProductStores/GetStores';
+						text = 'Select Warehouse';
+						length = 0;
+					}
+					else {
+						url = '/Categories/GetCategories';
+						text = 'Select Category';
+					}
+
+					
+
+					$("#tdDatepicker").hide();
+					$("#tdTrueOrFalse").hide();
+					$("#tdFreeText").hide();
+					$("#tdChannel").hide();
+					$("#tdIsCompleted").hide();
+					$("#tdEntity").show();
+					$('#ddlEntity').val(null).trigger('change');
+					$('#ddlEntity').select2({
+						minimumInputLength: length,
+						placeholder: text,
+						theme: "bootstrap4",
+						allowClear: true,
+						ajax: {
+							url: url,
+							contentType: "application/json; charset=utf-8",
+							data: function (params) {
+								var query =
+								{
+									term: params.term,
+								};
+								return query;
+							},
+							processResults: function (result) {
+								var dropdown = document.getElementsByName("fields")[0];
+								var selectedItems = [];
+								for (var i = 0; i < dropdown.options.length; i++) {
+									if (dropdown.options[i].selected) {
+										selectedItems.push(dropdown.options[i].value);
+									}
+								}
+								
+								//console.log(result);
+								var filteredResults = result.filter(function (item) {
+									return !selectedItems.includes(item.value);
+								});
+								return {
+									results: $.map(filteredResults, function (item) {
+										//console.log(result);
+										//var fieldId = $('#entity').attr('name');
+										//var productId = $('#productId').val();
+										//var value = "{" + "ProductId : " + "\"" + productId + "\"" + ",FieldId : " + "\"" + fieldId + "\"" + ",Value : " + "\"" + item.value + "\"" + "}";
+										
+										
+										
+										return {
+											id: item.value,
+											text: item.value
+										};
+									}),
+								};
+							}
+						}
+					});
+				}
+				else if (selectedObjectValue.Group === "TrueOrFalse") {
+					$("#tdEntity").hide();
+					$("#tdDatepicker").hide();
+					$("#tdFreeText").hide();
+					$("#tdChannel").hide();
+					$("#tdIsCompleted").hide();
+					$("#tdTrueOrFalse").show();
+					document.getElementById("ddlTrueOrFalse").style.visibility = "visible";
+					$.getJSON("/Basket/GetFieldValues", { id: fieldId }, function (data) {
+						$("#ddlTrueOrFalse").empty().append("<option value=''>Select a value</option>");
+						$.each(data, function (index, item) {
+							$("#ddlTrueOrFalse").append("<option value='" + item.value + "'>" + item.text + "</option>");
+						});
+					});
+				}
+				else if (selectedObjectValue.Group === "DatePicker") {
+					$("#tdEntity").hide();
+					$("#tdTrueOrFalse").hide();
+					$("#tdFreeText").hide();
+					$("#tdChannel").hide();
+					$("#tdIsCompleted").hide();
+					$("#tdDatepicker").show();
+					//$(function () {
+					//    $("#datepicker").datepicker();
+					//});
+					// Get the current date and format it as yyyy-mm-dd
+					var currentDate = new Date();
+					//var formattedDate = currentDate.getFullYear() + '-' + (currentDate.getMonth() + 1).toString().padStart(2, '0') + '-' + currentDate.getDate().toString().padStart(2, '0');
+
+					// Set the value of the datepicker element to the current date
+
+					//document.getElementById('datepicker').value = formattedDate;
+					//var datePicker = document.getElementById("datepicker");
+					//datePicker.value = formattedDate;
+					//datePicker.style.colorScheme = ;
+					// Calculate the earliest and latest selectable dates
+					//var today = new Date();
+					//var minDate = new Date(today);
+					//minDate.setDate(today.getDate() - 2); // set the minimum date to two days ago
+					//var maxDate = new Date(today);
+					//maxDate.setDate(today.getDate()); // set the maximum date to tomorrow
+
+					// Format the dates as yyyy-mm-dd strings for use in the input element
+					//var minDateString = minDate.toISOString().split("T")[0];
+					//var maxDateString = maxDate.toISOString().split("T")[0];
+
+					// Set the min and max attributes of the input element
+					//datePicker.min = minDateString;
+					//datePicker.max = maxDateString;
+				} else if (selectedObjectValue.Group === "FreeText") {
+					$("#tdEntity").hide();
+					$("#tdTrueOrFalse").hide();
+					$("#tdDatepicker").hide();
+					$("#tdChannel").hide();
+					$("#tdIsCompleted").hide();
+					$("#tdFreeText").show();
+				}
+				else if (selectedObjectValue.Group === "Channel") {
+					$("#tdEntity").hide();
+					$("#tdTrueOrFalse").hide();
+					$("#tdDatepicker").hide();
+					$("#tdFreeText").hide();
+					$("#tdIsCompleted").hide();
+					$("#tdChannel").show();
+				}
+				else if (selectedObjectValue.Group === "Bool") {
+					$("#tdEntity").hide();
+					$("#tdTrueOrFalse").hide();
+					$("#tdDatepicker").hide();
+					$("#tdFreeText").hide();
+					$("#tdChannel").hide();
+					$("#tdIsCompleted").show();
+				}
+			}
+			else {
+				$("#ddlTrueOrFalse").empty().append("<option value=''>Select a value</option>");
+				$("#tdEntity").hide();
+				$("#tdTrueOrFalse").hide();
+				$("#tdDatepicker").hide();
+				$("#tdFreeText").hide();
+				$("#tdChannel").hide();
+				$("#tdIsCompleted").hide();
+			}
+		})
+
+
+		//$("#ddlField").select2({
+		//	minimumResultsForSearch: -1
+		//});
+		$('#ddlField').select2({
+			placeholder: "Select field",
+			theme: "bootstrap4",
+			allowClear: true
+		}); 
+		//$("#ddlColumn").select2({
+		//	minimumResultsForSearch: -1
+		//});
+		$('#ddlColumn').select2({
+			placeholder: "Select field",
+			theme: "bootstrap4",
+			allowClear: true
+		});
+		$("#ddlTrueOrFalse").select2({
+			minimumResultsForSearch: -1
+		});
+		$("#ddlAscDesc").select2({
+			minimumResultsForSearch: -1
+		});
+		$("#ddlChannel").select2({
+			minimumResultsForSearch: Infinity
+		});
+		$("#ddlIsCompleted").select2({
+			minimumResultsForSearch: Infinity
+		});
+		// Handle the click event of the Add to basket button
+		$("#btnAddToBasket").click(function (event) {
+			event.preventDefault();
+
+			var field = $("#ddlField option:selected").text();
+			//var value = $("#ddlEntity option:selected").text();
+			var ddlFieldValue = $("#ddlField option:selected").val();
+			var selectedObjectValue = JSON.parse(ddlFieldValue);
+			//var value = $("#ddlValue option:selected").text();
+			var selectedItems = [];
+			if (selectedObjectValue.Group === "TrueOrFalse") {
+				selectedItems.push($("#ddlTrueOrFalse option:selected").val());
+			} else if (selectedObjectValue.Group === "Entity") {
+				var dropdown = document.getElementsByName("fields")[0];
+
+				for (var i = 0; i < dropdown.options.length; i++) {
+					if (dropdown.options[i].selected) {
+						selectedItems.push(dropdown.options[i].value);
+					}
+				}
+			} else if (selectedObjectValue.Group === "DatePicker") {
+				selectedItems.push(document.getElementById("datepicker").value);
+			} else if (selectedObjectValue.Group === "FreeText") {
+				selectedItems.push($('#textInput').val());
+			} else if (selectedObjectValue.Group === "Channel") {
+				selectedItems.push($("#ddlChannel option:selected").val());
+			}
+			else if (selectedObjectValue.Group === "Bool") {
+				selectedItems.push($("#ddlIsCompleted option:selected").val());
+			}
+			var foundValue = selectedItems.some(function (element) {
+				return element === "";
+			});
+			
+			if (selectedItems.length === 0 || foundValue) {
+				console.log("selectedItems is empty. Execution stopped.");
+				return;
+			}
+			var selectedItemsStr = selectedItems.join(", ");
+			console.log(selectedItems);
+			// Add the selected item to the basket
+			var data = { id: selectedObjectValue.Id, field: field, value: selectedItems, type: selectedObjectValue.Type, group: selectedObjectValue.Group };
+			$.ajax({
+				type: "POST",
+				url: "/Basket/AddToBasket" + "?dash=" + encodeURIComponent(@ViewData["dashId"]),
+				data: data,
+				success: function () {
+
+					$.get("/Basket/GetBasketItems" + "?dash=" + encodeURIComponent(@ViewData["dashId"]), function (d) {
+						$("#filters").empty();
+						$.each(d, function (index, item) {
+							var valueStr;
+							if (Array.isArray(item.value)) {
+								if (item.value.length > 1) {
+									valueStr = item.value.join(", ");
+								} else {
+									valueStr = item.value[0];
+								}
+							} else {
+								valueStr = item.value;
+							}
+							//var tableRow = "<tr ><td>" + item.field + "</td><td>: </td><td>" + valueStr + "</td><td style='display: none;'>" + item.type + "</td><td><form method='post'  ><input type='hidden' id='rowField' name='Field' value='" + item.field + "' /><input type='hidden' id='rowValue' name='Value' value='" + item.value + "' /><button type='button' class='btn btn-outline-secondary' onclick='removeItem(this)'><i class='icon-file-list-times'></i></button></form></td></tr>";
+							var tableRow = getNewFilterHtml(item, valueStr);
+							$("#filters").append(tableRow);
+
+							$('#ddlEntity').val(null).trigger('change');
+						});
+
+					});
+				},
+				error: function () {
+					alert("Error adding item to basket.");
+				}
+			});
+		});
+
+		$(function () {
+			$('[data-toggle="tooltip"]').tooltip()
+		})
+
+		$("#datepicker").datepicker({
+			dateFormat: "yy-mm-dd",
+			minDate: "-2M", maxDate: 0
+			});
+
+	});
+
+	function removeInternalItem(button) {
+		var rowField = button.parentNode.querySelector("#rowField").value;
+		var rowValue = button.parentNode.querySelector("#rowValue").value;
+		var rowType = button.parentNode.querySelector("#rowType").value;
+		//var type = row.find("span:eq(3)").text();
+		// Now you can use the rowField and rowValue as needed
+		console.log("Field:", rowField);
+		console.log("Value:", rowValue);
+		//console.log("TypeSpan:", type);
+		console.log("TypeRow:", rowType);
+		var selectedValue = [];
+		selectedValue.push(rowValue);
+		
+		// Add the selected item to the basket
+		var data = { field: rowField, value: selectedValue, type: rowType };
+		$.ajax({
+			type: "POST",
+			url: "/Basket/RemoveFromBasket" + "?dash=" + encodeURIComponent(@ViewData["dashId"]),
+			data: data,
+			success: function () {
+				$.get("/Basket/GetBasketItems", function (d) {
+					window.location.reload(true);
+					$("#filters").empty();
+					$.each(d, function (index, item) {
+						var valueStr;
+						if (Array.isArray(item.value)) {
+							if (item.value.length > 1) {
+								valueStr = item.value.join(", ");
+							} else {
+								valueStr = item.value[0];
+							}
+						} else {
+							valueStr = item.value;
+						}
+						//var tableRow = "<tr><td>" + item.field + "</td><td>: </td><td>" + valueStr + "</td ><td style='display: none;'>" + item.type + "</td> <td><form method='post' > <input type='hidden' id = 'rowField' name = 'Field' value = '" + item.field + "' /> <input type='hidden' id = 'rowValue' name = 'Value' value = '" + item.value + "' /> <button type='button' class='btn btn-outline-secondary' onclick = 'removeItem(this)' > <span class='bi bi-x' > </span></button > </form></td > </tr>";
+						var tableRow = getNewFilterHtml(item, valueStr);
+						$("#filters").append(tableRow);
+					});
+
+				});
+			},
+			error: function () {
+				alert("Error adding item to basket.");
+			}
+		});
+
+	};
+
+	function removeItem(button) {
+		var row = $(button).closest("li");
+		var field = row.find("span:eq(0)").text();
+		var value = row.find("span:eq(2)").text();
+		var type = row.find("span:eq(3)").text();
+
+		// Add the selected item to the basket
+		var data = { field: field, value: value.split(','), type: type };
+		$.ajax({
+			type: "POST",
+			url: "/Basket/RemoveFromBasket" + "?dash=" + encodeURIComponent(@ViewData["dashId"]),
+			data: data,
+			success: function () {
+				$.get("/Basket/GetBasketItems", function (d) {
+					window.location.reload(true);
+					$("#filters").empty();
+					$.each(d, function (index, item) {
+						var valueStr;
+						if (Array.isArray(item.value)) {
+							if (item.value.length > 1) {
+								valueStr = item.value.join(", ");
+							} else {
+								valueStr = item.value[0];
+							}
+						} else {
+							valueStr = item.value;
+						}
+						//var tableRow = "<tr><td>" + item.field + "</td><td>: </td><td>" + valueStr + "</td ><td style='display: none;'>" + item.type + "</td> <td><form method='post' > <input type='hidden' id = 'rowField' name = 'Field' value = '" + item.field + "' /> <input type='hidden' id = 'rowValue' name = 'Value' value = '" + item.value + "' /> <button type='button' class='btn btn-outline-secondary' onclick = 'removeItem(this)' > <span class='bi bi-x' > </span></button > </form></td > </tr>";
+						var tableRow = getNewFilterHtml(item, valueStr);
+						$("#filters").append(tableRow);
+					});
+
+				});
+			},
+			error: function () {
+				alert("Error adding item to basket.");
+			}
+		});
+
+	};
+
+	function getFilters() {
+		$.get("/Basket/GetBasketItems", function (d) {
+			$("#filters").empty();
+			$.each(d, function (index, item) {
+				var tableRow = "<li><span>" + item.field + "</span><span>: </span><span>" + item.value + "</span><span><form method='post'  ><input type='hidden' id='rowField' name='Field' value='" + item.field + "' /><input type='hidden' id='rowValue' name='Value' value='" + item.value + "' /><button type='button' class='btn btn-outline-secondary' onclick='removeItem(this)'><span class='bi bi-x'></span></button></form></span></li>";
+				$("#filters").append(tableRow);
+			});
+
+		});
+	}
+	function getItems() {
+		var basketItems;
+		$.ajax({
+			url: "/Basket/GetBasketItems",
+			type: "GET",
+			dataType: "json",
+			async: false,
+			success: function (data) {
+				basketItems = data;
+			},
+			error: function () {
+				console.error("Failed to retrieve basket items.");
+			}
+		});
+		return basketItems;
+	}
+	function search(button) {
+		window.location.reload(true);
+	};
+
+	function clearBasket(button) {
+		//console.log("Error clear basket.");
+		$.ajax({
+			type: "POST",
+			url: "/Basket/RemoveSession" + "?dash=" + encodeURIComponent(@ViewData["dashId"]),
+			success: function () {
+				window.location.reload(true);
+			},
+			error: function () {
+				console.error("Error clear basket.");
+			}
+		});
+
+	}
+	function retrieve(pageNumber) {
+		//var basketItems = getItems();
+		//var link = "/FieldProducts/Index?page=" + pageNumber + "&items=" + encodeURIComponent(JSON.stringify(basketItems));
+		//$('#pageLink').attr('href', link);
+		var items = getItems();
+		var url = "/FieldProducts/Index?page=" + pageNumber + "&items=" + encodeURIComponent(JSON.stringify(items));
+
+		$.getJSON(url, function (data) {
+			// Handle the response data here
+		});
+	};
+	function getUrl() {
+		var url = '';
+		if ($('#entity').val() == 'Category') {
+			var url = "/Categories/GetCategories";
+		}
+		return url;
+	}
+	function getItem() {
+		var item = '';
+		if ($('#entity').val() == 'Category') {
+			var item = "#categories";
+		}
+		return item;
+	}
+
+	function getNewFilterHtml(item, valueStr) {
+
+		var internalItem="";
+		//if (Array.isArray(item.value) && item.value.length == 1) {
+		//	internalItem = "<span>" + item.value[0] + "</span><span><form method='post' > <input type='hidden' id = 'rowField' name = 'Field' value = '" + item.field + "' /> <input type='hidden' id = 'rowValue' name = 'Value' value = '" + item.value[0] + "' /> <button type='button' class='btn btn-outline-secondary' onclick = 'removeItem(this)' > <span class='bi bi-x' > </span></button > </form></span >";
+		// }
+		// else{
+		//	for (var i = 0; i < item.value.length; i++) {
+		//		internalItem += "<span>" + item.value[i] + "</span><span><form method='post'> <input type='hidden' id='rowField' name='Field' value='" + item.field + "' /> <input type='hidden' id='rowValue' name='Value' value='" + item.value[i] + "' /> <button type='button' class='btn btn-outline-secondary' onclick='removeItem(this)'> <span class='bi bi-x'></span></button></form></span>";
+		//	}
+		// }
+		for (var i = 0; i < item.value.length; i++) {
+			internalItem += "<span><form method='post'><input type='hidden' id='rowField' name='Field' value='" + item.field + "'/><input type='hidden' id='rowValue' name='Value' value='" + item.value[i] + "'/><input type='hidden' id='rowType' name='Type' value='" + item.type + "'/><button type='button' class='btn btn-outline-secondary' onclick = 'removeInternalItem(this)' data-toggle='tooltip' data-placement='bottom' title='Delete'><span>" + item.value[i] + "</span></button></form></span>";
+		}   
+		
+		return "<li><span>" + item.field + "</span><span>:</span><span style='display:none;'>" + valueStr + "</span><span style='display:none;'>" + item.type + "</span>" + internalItem + "<span><form method='post' ><input type='hidden' id= 'rowField' name='Field' value='" + item.field + "'/><input type='hidden' id= 'rowValue' name='Value' value='" + item.value + "'/><button type='button' class='main-btn secondary-btn-outline btn-hover align-items-center' onclick = 'removeItem(this)' data-toggle='tooltip' data-placement='bottom' title = 'Delete All' ><i class='icon-file-list-times'></i></button></li>";
+	}	
+
+</script>
+
+@*<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>*@

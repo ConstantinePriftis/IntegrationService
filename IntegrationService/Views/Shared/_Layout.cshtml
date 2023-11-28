@@ -1,0 +1,317 @@
+﻿@inject IHttpContextAccessor HttpContextAccessor
+<!doctype html>
+<html lang="el">
+<head>
+
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Σκλαβενίτης | Διαχείρηση Ηλεκτρονικών Συλλογών</title>
+    <meta name="description" content="Σκλαβενίτης - Διαχείρηση Ηλεκτρονικών Συλλογών">
+    <meta name="title" content="Σκλαβενίτης | Διαχείρηση Ηλεκτρονικών Συλλογών">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
+
+    <link rel="shortcut icon" href="~/icons/favicon.ico" />
+    <link rel="apple-touch-icon" href="~/icons/icon-180x180.png" sizes="180x180">
+
+
+    <link rel="preload" type="font/woff2" href="~/fonts/carlito/carlito-v3-greek-ext_latin-regular.woff2" as="font" crossorigin />
+    <link rel="preload" type="font/woff2" href="~/fonts/carlito/carlito-v3-greek-ext_latin-700.woff2" as="font" crossorigin />
+
+
+
+
+    @if (IsSectionDefined("head"))
+    {
+        @await RenderSectionAsync("head", required: false)
+    }
+
+
+
+    <link rel="stylesheet" href="~/css/skeleton/bundle.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/jquery-ui_1.13.0.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/css_select2_4.1.0.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/skeleton/app.css" asp-append-version="true" />
+
+
+
+    <!-- Jquery -->
+    <script src="~/js/skeleton/lib/jQuery.v3.6.0-jQuery.UI.v1.13.0.js"></script>
+    <script src="~/js/skeleton/lib/datepicker-el.js"></script>
+
+
+</head>
+
+
+
+
+
+<body class="@ViewBag.BodyClass" >
+
+    <!-- HEADER
+    ///////////////////////////////////////////////////////////////////// -->
+    <header class="header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-lg-5 col-md-5 col-6">
+                    <div class="header-left d-flex align-items-center">
+
+                        <div class="menu-toggle-btn mr-20">
+                            <button id="menu-toggle" aria-label="menu toggle" class="main-btn secondary-btn btn-hover">
+                                <i class="icon-angle-left"></i>
+                            </button>
+                        </div><!-- /TOGGLE-->
+
+                        <div class="brand">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 161.1 20.3"><title>Σκλαβενίτης</title><path style="fill:#4e141e" d="M161.1 16.5h-10.6v-1.8l5-4.8-4.8-4.3V3.7h9.9V6h-5.8l4.1 3.9-4.3 4.4h6.4m-12 2.2h-2.8v-5.7h-5.7v5.7h-2.8V3.7h2.8v4.8h5.7V3.7h2.8v12.8ZM135.9 6h-4.1v10.5h-2.9V6h-4.1V3.7h11l.1 2.3ZM123 16.5h-2.8V3.7h2.8v12.8Zm-5.8 0h-2.9l-5.6-8.8v8.8h-2.9V3.7h3l5.6 8.8V3.7h2.8v12.8Zm-13.6 0H93.2V3.7h10V6H96v2.7h6.6v2.2H96v3.3h7.5l.1 2.3ZM90 5.1c.4.5.6 1.2.6 2S90.4 8.5 90 9c-.2.3-.6.5-1 .7.7.2 1.2.6 1.6 1.1s.5 1.1.5 1.9-.2 1.4-.6 2c-.3.4-.6.7-1 1s-.9.5-1.5.6-1.2.2-1.9.2H80V3.7h6.6c1.6 0 2.7.5 3.4 1.4Zm-7.4.8v2.8h3.3c.6 0 1.1-.1 1.4-.3s.6-.6.6-1.1c0-.6-.2-1-.7-1.2-.4-.1-1-.2-1.6-.2h-3Zm0 5v3.4h3.3c.6 0 1.1-.1 1.4-.2.6-.3.9-.8.9-1.6 0-.7-.3-1.1-.9-1.4-.3-.1-.8-.2-1.4-.2h-3.3Zm-8.9-7.2h-3.2l-4.9 12.8h3l.9-2.6h5.3l.9 2.6h3l-5-12.8Zm-3.6 8.1L72 6.3l2 5.5h-3.9Zm-5.4 4.7h-3.1l-3-9.5-3 9.5h-3.1l4.7-12.8H60l4.7 12.8Zm-12.6 0h-3.5l-4.5-5.9-1.4 1.4v4.5h-2.9V3.7h2.9V9l5.4-5.3h3.5l-5.5 5.2 6 7.6Zm-13.6 0H28v-1.8l5-4.8-4.7-4.3V3.7h9.8V6h-5.8l4.1 3.9-4.3 4.4h6.4v2.2Z" /><path style="fill:#f37920" d="M20.8 5.7h-6.4c1.5.9 2.5 2.6 2.5 4.4 0 2.9-2.3 5.2-5.2 5.2H0v5h11.6c5.6 0 10.2-4.6 10.2-10.2 0-1.5-.3-3-1-4.4" /><path style="fill:#d91a33;fill-rule:evenodd" d="M11.6 14.5c2.4 0 4.4-2 4.4-4.4s-2-4.4-4.4-4.4-4.4 2-4.4 4.4c0 2.5 2 4.4 4.4 4.4" /><path style="fill:#f37920" d="M11.6 0C6 0 1.5 4.6 1.5 10.2c0 1.5.3 3 1 4.4h6.4C6.4 13 5.7 9.8 7.2 7.4c.9-1.5 2.6-2.5 4.4-2.5h11.7V0H11.6Z" /></svg>
+                        </div><!-- /BRAND -->
+                    </div>
+                </div>
+                <div class="col-lg-7 col-md-7 col-6 d-flex align-items-center justify-content-end">
+                    <div class="header-right">
+                        <div class="info">
+                            <partial name="_LoginPartial" />
+                        </div><!-- /INFO-->
+                    </div>
+                </div>
+            </div><!--ROW-->
+        </div><!--CONTAINER-->
+    </header>
+    <!-- / HEADER
+    ///////////////////////////////////////////////////////////////////// -->
+    <!-- ASIDE
+    ///////////////////////////////////////////////////////////////////// -->
+    <aside class="sidebar-nav-wrapper card-style">
+        <div class="sidebar-nav-scroll">
+            <nav class="sidebar-nav">
+                <ul>
+
+                    <!-- nav-1 -->
+                    <li class="@(ViewData["Title"] == "Αρχική" ? "nav-item active" : "nav-item")">
+                        <a class="@(ViewData["Title"]=="Αρχική" ? "nav-link active" : "nav-link")" asp-controller="Home" asp-action="Index">
+                            <i class="icon-home"></i>
+                            <span class="text">Αρχική</span>
+                        </a>
+                    </li>
+                    <!-- /nav-1 -->
+                    @if (ViewContext.HttpContext.User.Claims.Any(x => x.Type == "IsAdmin" && x.Value == "true"))
+                    {
+                        <!-- nav-2 -->
+                        <li class="@(ViewData["Title"] == "Είδη" ? "nav-item active" : "nav-item")">
+                            <a class="@(ViewData["Title"]=="Είδη" ? "nav-link active" : "nav-link")" asp-controller="fieldproducts" asp-action="Index">
+                                <i class="icon-items"></i>
+                                <span class="text">Είδη</span>
+                            </a>
+                        </li>
+                        <!-- /nav-2 -->
+                        <!-- nav-3 -->
+                        <li class="@(ViewData["Title"] == "Είδη/Κατάστημα" ? "nav-item active" : "nav-item")">
+                            <a class="@(ViewData["Title"]=="Είδη/Κατάστημα" ? "nav-link active" : "nav-link")" asp-controller="fieldproductstores" asp-action="Index">
+                                <i class="icon-shopping-cart"></i>
+                                <span class="text">Είδη/Κατάστημα</span>
+                            </a>
+                        </li>
+                        <!-- /nav-3 -->
+                        <!-- nav-4 -->
+                        <li class="@(ViewData["Title"] == "Διατροφικά Χαρακτηριστικά" ? "nav-item active" : "nav-item")">
+                            <a class="@(ViewData["Title"]=="Διατροφικά Χαρακτηριστικά" ? "nav-link active" : "nav-link")" asp-controller="Nutritions" asp-action="Index">
+                                <i class="icon-characteristics"></i>
+                                <span class="text">Διατροφικά Χαρακτηριστικά</span>
+                            </a>
+                        </li>
+                        <li class="@(ViewData["Title"] == "StaticExport" ? "nav-item active" : "nav-item")">
+                            <a class="@(ViewData["Title"]=="StaticExport" ? "nav-link active" : "nav-link")" asp-controller="StaticExport" asp-action="Index">
+                                <i class="icon-minus"></i>
+                                Εξαγωγή αρχείου
+                            </a>
+                        </li>
+                        <!-- /nav-4 -->
+                        <!-- nav-4 -->
+                        <li class="nav-item">
+                            <hr class="separator separator-horizontal width-80 margin-auto mt-20 mb-20">
+                        </li>
+                        <!-- /nav-4 -->
+                        <!-- nav-5 -->
+                        <li class="nav-item nav-item-has-children">
+
+                            <a href="/" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_4" aria-controls="ddmenu_4" aria-expanded="false" aria-label="Toggle navigation">
+                                <i class="icon-settings"></i>
+                                <span class="text">Διαχείριση </span>
+                            </a>
+
+                            <ul id="ddmenu_4" class="collapse show dropdown-nav">
+
+                                <li>
+                                    <a class="@(ViewData["Title"]=="Καταστήματα" ? "nav-link active" : "nav-link")" asp-controller="stores" asp-action="">
+                                        <i class="icon-minus"></i>
+                                        Καταστήματα
+                                    </a>
+                                </li>
+
+                                @* <li>
+                            <a href="/">
+                            <i class="icon-minus"></i>
+                            Παραμετρικά Πεδία
+                            </a>
+                            </li>*@
+
+                                <li>
+                                    <a class="@(ViewData["Title"]=="Κατηγορίες" ? "nav-link active" : "nav-link")" asp-controller="Categories" asp-action="">
+                                        <i class="icon-minus"></i>
+                                        Κατηγορίες
+                                    </a>
+                                </li>
+
+                                @* <li>
+                            <a class="@(ViewData["Title"]=="Import" ? "nav-link active" : "nav-link")" asp-controller="Import" asp-action="">
+                            <i class="icon-minus"></i>
+                            Εισαγωγή αρχείου
+                            </a>
+                            </li>*@
+
+
+
+                            </ul>
+
+                        </li>
+                        <!-- /nav-5 -->
+                    }
+
+
+                </ul>
+            </nav><!-- /NAVIGATION -->
+
+
+
+
+
+        </div>
+
+    </aside>
+    <!-- / ASIDE
+    ///////////////////////////////////////////////////////////////////// -->
+
+
+    <div class="overlay"></div>
+
+
+
+    <!-- MAIN
+    ///////////////////////////////////////////////////////////////////// -->
+
+
+    <main class="main-wrapper">
+
+
+
+
+        <section class="table-components">
+            <div class="container-fluid">
+                <div class="tables-wrapper">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card-style">
+
+                                <!-- / CARD CONTENT
+                                ///////////////////////////////////////////////////////////////////// -->
+                                @RenderBody()
+                                <!-- / CARD CONTENT
+                                ///////////////////////////////////////////////////////////////////// -->
+
+
+                            </div><!--/card-style-->
+                        </div><!--/col-->
+                    </div><!--/row-->
+                </div><!--/tables-wrapper-->
+            </div><!--/container-->
+        </section><!--/table-->
+
+
+
+
+
+    </main>
+
+
+
+
+    <!-- /MAIN
+    ///////////////////////////////////////////////////////////////////// -->
+    <!-- FOOTER
+    ///////////////////////////////////////////////////////////////////// -->
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="row mb-10">
+                <div class="col-md-6 order-last order-md-first">
+                    <div class="copyright text-center text-md-start">
+                        <p class="text-sm text-center ml-50">
+
+                        </p>
+                    </div>
+                </div><!--/COL-->
+                <div class="col-md-6">
+                    <div class=" terms d-flex justify-content-center justify-content-md-end">
+                        <a href="#0" class="text-sm mr-40">
+                            Σκλαβενίτης © <script>document.write(new Date().getFullYear())</script>
+                            <span id="year"></span> / Διαχείρηση Ηλεκτρονικών Συλλογών
+                        </a>
+                    </div>
+                </div>
+            </div><!--/ROW -->
+        </div><!--/CONTAINER -->
+    </footer>
+    <!-- /FOOTER
+    ///////////////////////////////////////////////////////////////////// -->
+
+
+
+    <script type="text/javascript" src="~/js/popper.min.js"></script>
+
+    <script type="text/javascript" src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+
+
+    <!-- Scripts -->
+    <script src="~/js/skeleton/lib/gridviewscroll.js"></script>
+    <script src="~/js/skeleton/lib/jeditable.js"></script>
+    <script src="~/js/skeleton/lib/mvc-grid.js"></script>
+    <script src="~/js/skeleton/lib/inline-edit.js"></script>
+    <script src="~/js/skeleton/lib/select-2-4.1.js"></script>
+
+    <!-- <script src="~/js/bootstrap5-1-3.bundle.min.js"></script> -->
+    <script src="~/js/skeleton/app.js"></script>
+
+
+
+
+
+    <script>
+        [].forEach.call(document.getElementsByClassName('mvc-grid'), function (element) {
+            new MvcGrid(element);
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            // When a navigation tab is clicked
+            $(".nav-item").on("click", function () {
+                $.post('/Basket/ClearSession', function (data) {
+                    
+                });
+            });
+        });
+    </script>
+
+
+
+    @await RenderSectionAsync("scripts", required: false)
+    @await RenderSectionAsync("ControlsSection", required: false)
+
+
+
+
+
+
+
+
+</body>
+</html>

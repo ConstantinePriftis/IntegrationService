@@ -1,0 +1,33 @@
+﻿@using IntegrationService.Models.User
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="mb-2 navbar-nav ms-auto align-items-center navbar-list mb-lg-0">
+@if (SignInManager.IsSignedIn(User))
+{
+    <li class="nav-item">
+       @* <a  class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name</a>*@
+         <a class="nav-link" asp-area="Identity" title="Manage">Hello @User.Identity?.Name</a>
+    </li>
+    <li class="nav-item">
+        <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button type="submit" class="nav-link btn btn-link"><i class="icon-log-out"></i> Logout</button>
+        </form>
+            @*<a class="nav-link text-dark" type="" asp-area="Identity" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" asp-page="/Account/Logout">Logout</a>*@
+    </li>
+}
+else
+{
+    @*<li class="nav-item">
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">
+                <i class="icon-register"></i> Register
+        </a>
+    </li>*@
+    <li class="nav-item">
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">
+                <i class="icon-log-in"></i> Login
+        </a>
+    </li>
+}
+</ul>

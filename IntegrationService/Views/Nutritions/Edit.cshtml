@@ -1,0 +1,117 @@
+﻿@model IEnumerable<IntegrationService.Models.Nutritions.Nutrition>
+@using IntegrationService.ViewModels.Nutrition;
+@{
+    ViewData["Title"] = "Edit";
+    ViewBag.BodyClass = "nutritions-edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<div class="card-body">
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="card-title">Επεξεργασία</h2>
+        </div>
+        <div class="col-md-6 text-end">
+            <a asp-action="Index" class="return-link"><i class="icon-arrow-left-small"></i> <span>Επιστροφή</span></a>
+        </div>
+        <div class="form-group d-flex flex-row edit-cr sku mb-20" style="border-bottom:1px solid var(--color-neutral-4);padding-bottom:20px;">
+            <label asp-for="@Model.FirstOrDefault().Sku" class="control-label pseudo"></label>
+            @Model.FirstOrDefault().Sku
+            <span asp-validation-for="@Model.First().Sku" class="text-danger"></span>
+        </div>
+        <form method="post" asp-action="Edit">
+            <div class="text-danger"></div>
+            <div class="form-group create">
+                <input id="Sku" name="Sku" asp-for="@Model.FirstOrDefault().Sku" style="width:600px;" hidden="hidden">
+            </div>
+            <label hidden="hidden" id="ModelCount" class="control-label">@Model.Count()</label>
+            <h4 id="ProductTitle"></h4>
+            <div class="form-group create">
+                <div class="table-responsive mt-20">
+                    <table id="NutritionsTable" class="table align-middle">
+                        <tr>
+                            <th>Title</th>
+                            <th>FirstCell</th>
+                            <th>SecondCell</th>
+                            <th>ThirdCell</th>
+                            <th>FourthCell</th>
+                            <th style="width:100px; text-align:center;">IsHighlight</th>
+                            <th style="width:100px; text-align:center;">Order<span style="color:red;margin-left:5px;"> *</span></th>
+                            <th style="width:100px; text-align:center;">IsBold</th>
+                            <th>Note</th>
+                        </tr>
+
+                        @for (var i = 0; i < Model.Count(); i++)
+                        {
+                            <tr>
+                                <td hidden="hidden"><input name="[@i].Id" asp-for="@Model.ToArray()[i].Id" /></td>
+                                <td hidden="hidden"><input name="[@i].Sku" asp-for="@Model.ToArray()[i].Sku" /></td>
+                                <td hidden="hidden"><input name="[@i].ProductId" asp-for="@Model.ToArray()[i].ProductId" /></td>
+                                <td class='create-row'><input name="[@i].Title" asp-for="@Model.ToArray()[i].Title" id="Title" /></td>
+                                <td class='create-row'><input name="[@i].FirstCell" asp-for="@Model.ToArray()[i].FirstCell" id="FirstCell" /></td>
+                                <td class='create-row'><input name="[@i].SecondCell" asp-for="@Model.ToArray()[i].SecondCell" id="SecondCell" /></td>
+                                <td class='create-row'><input name="[@i].ThirdCell" asp-for="@Model.ToArray()[i].ThirdCell" /></td>
+                                <td class='create-row' style='width:150px;'><input name="[@i].FourthCell" asp-for="@Model.ToArray()[i].FourthCell" /></td>
+                                <td class='create-row-highlight' style='width:100px; text-align:center;'><input class="form-check-input" name="[@i].IsHighlight" asp-for="@Model.ToArray()[i].IsHighlight" value="true" /></td>
+                                <td class='create-row' style='width:100px;'><input name="[@i].Order" min="1" asp-for="@Model.ToArray()[i].Order" /></td>
+                                <td class='create-row-highlight' style='width:100px; text-align:center;'><input class="form-check-input" name="[@i].IsBold" asp-for="@Model.ToArray()[i].IsBold" value="true" /></td>
+                                <td class='create-row'><input name="[@i].Note" asp-for="@Model.ToArray()[i].Note" /></td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <ul class="filter-btn-group f-14">
+                    <li>
+                        <a class="main-btn primary-btn-outline btn-hover d-flex align-items-center" style="gap:5px;" asp-action="submit" value="Create">
+                            <i class="icon-plus"></i>Αποθήκευση
+                        </a>
+                    </li>
+                    <li><div class="vertical-seperator"></div></li>
+                    <li> <button id="addRowBtn" value="Update" class="create main-btn secondary-btn-outline btn-hover"><i class="icon-row"></i>Add Row</button></li>
+                </ul>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+    }
+    <script>
+        $(document).ready(function () {
+            
+            // Get a reference to the button
+            var addRowBtn = $("#addRowBtn");
+            // Attach the click event listener
+            addRowBtn.click(function (e) {
+                e.preventDefault();
+
+                // Add a new row to the table
+                var table = $("#NutritionsTable");
+                var CurrentNutritionIndex = table.find("tr").length-1;
+                var newRow = $("<tr></tr>");
+                var index = CurrentNutritionIndex;
+                newRow.append("<td hidden='hidden'><input name='[" + CurrentNutritionIndex + "].ProductId' value='@Model.FirstOrDefault().ProductId' id='ProductId' " + "></td>");
+                newRow.append("<td hidden='hidden'><input name='[" + CurrentNutritionIndex + "].Sku' value='@Model.FirstOrDefault().Sku'id='Sku' " + "></td>");
+                newRow.append("<td class='create-row'><input name='[" + CurrentNutritionIndex + "].Title' asp-for='[" + CurrentNutritionIndex + "].Sku' id='Title' " + "></td>");
+                newRow.append("<td class='create-row'><input name='[" + CurrentNutritionIndex + "].FirstCell' id='FirstCell' " + "></td>");
+                newRow.append("<td class='create-row'><input name='[" + CurrentNutritionIndex + "].SecondCell' id='SecondCell' " + "></td>");
+                newRow.append("<td class='create-row'><input name='[" + CurrentNutritionIndex + "].ThirdCell' id='ThirdCell' " + "></td>");
+                newRow.append("<td class='create-row' style='width:150px;'><input name='[" + CurrentNutritionIndex + "].FourthCell' id='FourthCell' " + "></td>");
+                newRow.append("<td class='create-row-highlight' style='width:100px; text-align:center;'><input class='form-check-input' type='checkbox' value='true' name='[" + CurrentNutritionIndex + "].IsHighlight' id='IsHighlight' " + "></td>");
+                newRow.append("<td class='create-row' style='width:100px;'><input type='number' min='1' name='[" + CurrentNutritionIndex + "].Order' id='Order'  " + "></td>");
+                newRow.append("<td class='create-row-highlight' style='width:100px; text-align:center;'><input class='form-check-input' type='checkbox' value='true' name='[" + CurrentNutritionIndex + "].IsBold' id='IsBold'" + "></td>");
+                newRow.append("<td class='create-row'><input name='[" + CurrentNutritionIndex + "].Note' id='Note'" + "/></td>");
+                table.append(newRow);
+                //CurrentNutritionIndex++;
+            });
+        });
+    </script>}

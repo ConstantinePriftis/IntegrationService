@@ -1,0 +1,71 @@
+﻿@model IntegrationService.Models.Stores.Store
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="card-body">
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="card-title">Details</h2>
+            <h6 class="card-subtitle mb-2 text-muted">Store</h6>
+        </div>
+        <div class="col-md-6 text-end"><a asp-action="Index" class="return-link"><i class="icon-arrow-left-small"></i> <span>Back to List</span></a></div>
+    </div>
+
+    <div class="row">
+        <div class="col mt-20 mb-50">
+
+            <dl class="row">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Type)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Type)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Name)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.StoreCode)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.StoreCode)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.ComesFromReflexes)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.ComesFromReflexes)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.CreatedOn)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.CreatedOn)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.ModifiedOn)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.ModifiedOn)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Enabled)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Enabled)
+                </dd>
+            </dl>
+            <hr />
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn secondary-btn btn-hover text-dark"><i class="icon-edit"></i> Edit</a>
+
+        </div><!--/col-->
+    </div><!--/row-->
+</div><!--/CARD-BODY-->

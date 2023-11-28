@@ -1,0 +1,101 @@
+﻿@{
+    ViewData["Title"] = "StaticExport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="card-body">
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="card-title">Εξαγωγή αρχείου</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col mb-50">
+
+
+            <form asp-controller="StaticExport" asp-action="Index" method="post" enctype="multipart/form-data">
+
+           
+                <div class="row mt-2">
+                    <div class="col-2">
+                        @Html.LabelFor(model => model.FirstOrDefault().ModifiedOn, htmlAttributes: new { @class = "form-label" })
+                        <input class="form-control" placeholder="Select Date" style="border: 1px solid var(--color-neutral-4);font-size: 13px;font-family: Carlito;color: #444;" type="text" id="filter" name="filter" />
+                    </div>
+                </div>
+
+                <div class="row mt-2">
+                    <div class="col-auto">
+                        <button type="submit" onclick="GenericPost()" class="main-btn primary-btn-outline btn-hover d-flex align-items-center" style="gap:5px;"><i class="icon-download"></i>Εξαγωγή αρχείου</button>
+                    </div>
+                </div>
+
+              
+            </form>
+
+
+            @model IQueryable<ExportRequestViewModel>
+            @using IntegrationService.Models.Exports;
+            @using IntegrationService.ViewModels.Exports;
+            @*@using Razor_Entity_Framework.Models*@
+
+            <div class="table-responsive" id="table-scroll">
+                <table cellpadding="0" cellspacing="0" class="export-table" style="width:100%;border-collapse:collapse;">
+                        <tr class="GridViewScrollHeader">
+                            <th class="table-rest-values">Created By</th>
+                            <th class="table-rest-values">Created On</th>
+                            <th class="table-rest-values">Modified By</th>
+                            <th class="table-rest-values">Modified On</th>
+                        </tr>
+                        @foreach (var exp in Model)
+                        {
+                            <tr class="GridViewScrollItem">
+                                <td class="table-rest-values">@exp.CreatedBy</td>
+                                <td class="table-rest-values">@exp.CreatedOn</td>
+                                <td class="table-rest-values">@exp.ModifiedBy</td>
+                                <td class="table-rest-values">@exp.ModifiedOn</td>
+                            </tr>
+                        }
+                </table>
+            </div><!--/table-scroll-->
+            @{
+            }
+
+
+
+
+        </div><!--/col-->
+    </div><!--/row-->
+</div><!--/CARD-BODY-->
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#filter").datepicker({
+                dateFormat: "yy-mm-dd",
+                minDate: "-2M", maxDate: 0
+            });
+        })
+    </script>
+}
+
+@*<script type="text/javascript">
+    $(function () {
+        $('#filter').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            format: "dd/mm/yyyy",
+            language: "tr"
+        });
+    });
+</script>*@
+
+
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@*    <input type="file" name="file" class="form-control" multiple />
+    <hr />*@

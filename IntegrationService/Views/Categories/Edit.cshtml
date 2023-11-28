@@ -1,0 +1,87 @@
+﻿@model IntegrationService.Models.Categories.Category
+
+@{
+    ViewData["Title"] = "Edit";
+    ViewBag.BodyClass = "category-detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="card-body">
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="card-title">Κατηγορίες</h2>
+            <h6 class="card-subtitle mb-2">Επεξεργασία Παραμετρικών Πεδίων</h6>
+        </div>
+        <div class="col-md-6 text-end"><a asp-action="Index" class="return-link"><i class="icon-arrow-left-small"></i> <span>Επιστροφή</span></a></div>
+    </div>
+
+    <div class="row">
+        <div class="col mb-50">
+            <div class="row">
+            <div class="col-md-6">
+
+           
+            <form asp-action="Edit" class="edit-form-layout sku" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group d-flex flex-row edit-cr sku">
+                    <label asp-for="Code" class="control-label pseudo"></label>
+                    @Model.Code
+                    <span asp-validation-for="Code" class="text-danger"></span>
+                </div>
+                <hr style="margin:9px 0;" />
+                <div class="form-insider">
+                            <div class="form-group d-flex edit-field fps dooo" style="border: 0px;background: var(--color-neutral-1);">
+                        <label asp-for="Level" class="control-label pseudo" style="width:100%"></label>
+                        <input asp-for="Level" class="form-control" />
+                        <span asp-validation-for="Level" class="text-danger"></span>
+                    </div>
+                            <div class="form-group d-flex edit-field fps dooo" style="border: 0px;background: var(--color-neutral-1);">
+                        <label asp-for="Description" class="control-label pseudo" style="width:100%;"></label>
+                        <input asp-for="Description" class="form-control" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <input type="hidden" asp-for="Code" />
+                    <input type="hidden" asp-for="Id" />
+                    @*<div class="form-group d-flex flex-row edit-cr sku">
+                        <label asp-for="CreatedOn" class="control-label"></label>
+                        <input asp-for="CreatedOn" class="form-control" />
+                        <span asp-validation-for="CreatedOn" class="text-danger"></span>
+                    </div>
+                    <div class="form-group d-flex flex-row edit-cr sku">
+                        <label asp-for="ModifiedOn" class="control-label"></label>
+                        <input asp-for="ModifiedOn" class="form-control" />
+                        <span asp-validation-for="ModifiedOn" class="text-danger"></span>
+                    </div>*@
+                     <div class="form-group d-flex edit-field fps dooo" style="border: 0px;background: var(--color-neutral-1);">
+                        <div class="form-group form-check">
+                            <label class="form-check-label">
+                                <input class="form-check-input" asp-for="Enabled" /> @Html.DisplayNameFor(model => model.Enabled)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                            <ul class="filter-btn-group f-14">
+                                <li>
+                                    <input class="main-btn primary-btn-outline btn-hover d-flex align-items-center" style="gap:5px;height:auto;" value="Αποθήκευση" type="submit">
+                                    @*<i class="icon-plus"></i>*@
+                                </li>
+                            </ul>
+                </div>
+            </form>
+
+                </div>
+            </div>
+        </div><!--/col-->
+    </div><!--/row-->
+</div><!--/CARD-BODY-->
+
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

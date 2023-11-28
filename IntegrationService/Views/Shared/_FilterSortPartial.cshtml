@@ -1,0 +1,306 @@
+﻿@model IntegrationService.ViewModels.PartialViewModel
+@inject IHttpContextAccessor HttpContextAccessor;
+@using IntegrationService.ViewModels.FieldProductStores;
+@using IntegrationService.ViewModels.FieldProductsViewModels;
+@using NonFactors.Mvc.Grid;
+@using System.Data;
+@using PagedList.Core.Mvc
+@using Newtonsoft.Json;
+@using System.Globalization;
+
+
+
+
+<div class="dropdown-filter-wrapper">
+
+    <div class="dropdown-filter-wrapper-content">
+        @*Αν το σβήσω με γνώμονα το responsiveness , τότε θα πρέπει να πάει column το ένα κάτω από το άλλο*@
+        <div class="form-group d-flex skl" style="width:60%;justify-content:space-between;">
+            <ul class="filter-list">
+                <li class="filter-list-item dropdown-filter-select">
+                    @{
+                        if (Convert.ToString(ViewData["dashId"]) == "10")
+                        {
+                            @Html.DropDownListFor(m => m.FieldProductStoreList, @ViewData["ddlFieldsList"] as List<SelectListItem>, "Select field", new { id = "ddlField",style="visibility: hidden;" })
+                        }
+                        else if (Convert.ToString(ViewData["dashId"]) == "20")
+                        {
+                            @Html.DropDownListFor(m => m.FieldProductlList, @ViewData["ddlFieldsList"] as List<SelectListItem>, "Select field", new { id = "ddlField",style="visibility: hidden;" })
+
+                        }
+                        else if (Convert.ToString(ViewData["dashId"]) == "30")
+                        {
+                            @Html.DropDownListFor(m => m.NutritionList, @ViewData["ddlFieldsList"] as List<SelectListItem>, "Select field", new { id = "ddlField",style="visibility: hidden;" })
+                        }
+                        else if (Convert.ToString(ViewData["dashId"]) == "40")
+                        {
+                            @Html.DropDownListFor(m => m.CategoryList, @ViewData["ddlFieldsList"] as List<SelectListItem>, "Select field", new { id = "ddlField",style="visibility: hidden;" })
+                        }
+                        else if (Convert.ToString(ViewData["dashId"]) == "50")
+                        {
+                            @Html.DropDownListFor(m => m.StoreList, @ViewData["ddlFieldsList"] as List<SelectListItem>, "Select field", new { id = "ddlField",style="visibility: hidden;" })
+                        }
+                    }
+
+                </li><!---->
+
+
+                <li class="filter-list-item">
+
+                    <div id="tdTrueOrFalse" style="display: none">
+                        @{
+                            if (Convert.ToString(ViewData["dashId"]) == "10")
+                            {
+                                @Html.DropDownListFor(m => m.FieldProductStoreList,new List<SelectListItem>(){}, "Select value", new { id = "ddlTrueOrFalse", style="visibility: hidden;"})
+                            }
+                            else if (Convert.ToString(ViewData["dashId"]) == "20")
+                            {
+                                @Html.DropDownListFor(m => m.FieldProductlList,new List<SelectListItem>(){}, "Select value", new { id = "ddlTrueOrFalse", style="visibility: hidden;"})
+
+                            }
+                            else if (Convert.ToString(ViewData["dashId"]) == "30")
+                            {
+                                @Html.DropDownListFor(m => m.NutritionList,new List<SelectListItem>(){}, "Select value", new { id = "ddlTrueOrFalse", style="visibility: hidden;"})
+                            }
+                            else if (Convert.ToString(ViewData["dashId"]) == "40")
+                            {
+                                @Html.DropDownListFor(m => m.CategoryList,new List<SelectListItem>(){}, "Select value", new { id = "ddlTrueOrFalse", style="visibility: hidden;"})
+                            }
+                            else if (Convert.ToString(ViewData["dashId"]) == "50")
+                            {
+                                @Html.DropDownListFor(m => m.StoreList,new List<SelectListItem>(){}, "Select value", new { id = "ddlTrueOrFalse", style="visibility: hidden;"})
+                            }
+                        }
+
+                    </div>
+
+
+                </li><!---->
+
+
+                <li class="filter-list-item skl-filter">
+                    <div id="tdEntity" style="display: none;">
+                        <select name="fields" style="min-width:150px;" id="ddlEntity" class="js-example-basic-multiple js-states form-control skl-sku" multiple></select>
+                    </div>
+                </li>
+                @if (Convert.ToString(ViewData["dashId"]) == "20")
+                {
+                    <li class="filter-list-item channel">
+                        <div id="tdChannel" style="display: none;">
+                            <select name="channelValue" id="ddlChannel" style="width: 100px;height:28px;border:1px solid var(--color-neutral-4);background:#fff;text-align:left;padding:0;" class="edit-dropdown default-button dropdown-toggle">
+                                @foreach (var option in new[]
+                               {
+                                    @* new { Value = "", Text = "Select a value" },*@
+                                    new { Value = "IN", Text = "IN" },
+                                    new { Value = "OUT", Text = "OUT" },
+                                    new { Value = "EMPTY", Text = "EMPTY" }
+                                            })
+                                {
+                                    <option value=@option.Value>@option.Text</option>
+                                }
+                                @*<option value="9">IN</option>
+                            <option value="X">OUT</option>
+                            <option value=" ">EMPTY</option>*@
+                            </select>
+                        </div>
+                    </li>
+                }
+                <li class="filter-list-item channel">
+                    <div id="tdIsCompleted" style="display: none;">
+                <select id="ddlIsCompleted" style="width:215px;height:28px;border:1px solid var(--color-neutral-4);background:#fff;text-align:left;padding:0;" class="edit-dropdown default-button dropdown-toggle">
+                    @foreach (var option in new[]
+                    {
+                    new { Value = "true", Text = "True" },
+                    new { Value = "false", Text = "False" }
+                            })
+                    {
+                         <option value="@option.Value">@option.Text</option>
+                    }
+
+                </select>
+                </div>
+                </li>
+                <li class="filter-listfilters-item">
+                    <!--Date Picker-->
+                    <div id="tdDatepicker" style="display: none;">
+                        <input type="text" id="datepicker" placeholder="Select Date" autocomplete="off" name="StartDate" value="" style="border: 1px solid var(--color-neutral-4); border-radius: 4px; width: 100px;text-align: center;padding: 0 10px;height:25px;" />
+                    </div>
+                </li><!---->
+
+
+
+
+                <li class="filter-list-item">
+                    <!--Title field-->
+                    <div id="tdFreeText" style="display: none; height:25px;">
+                        <textarea id="textInput" rows="1" style="width:165px;border-radius: 4px; resize: none; border: 1px solid var(--color-neutral-4);padding:2px 10px;" class="filter-text-area"></textarea>
+                    </div>
+
+                </li><!---->
+
+
+
+
+            </ul><!--/-->
+            <div>
+                <div class="skl-plus-icon">
+                    <button type="button" id="btnAddToBasket" style="display:none" class="main-btn primary-btn btn-hover primary-btn-outline"><i class="icon-plus"></i></button>
+                </div><!---->
+            </div>
+        </div>
+
+        <div class="form-group d-flex skl" style="width:40%; gap:20px; position: relative ">
+            <div class="sort-by-wrapper">
+                <div class="filter-sorting">
+                    <label class="control-label pseudo">Sort By</label>
+                    <ul class="filter-list">
+                        <li class="filter-list-item dropdown-filter-select">
+                            @{
+                                if (Convert.ToString(ViewData["dashId"]) == "10")
+                                {
+                                    @Html.DropDownListFor(m => m.FieldProductStoreList, @ViewData["ddlColumnList"] as List<SelectListItem> , "Select Column", new {id = "ddlColumn" ,style="visibility: hidden;"})
+                                }
+                                else if (Convert.ToString(ViewData["dashId"]) == "20")
+                                {
+                                    @Html.DropDownListFor(m => m.FieldProductlList, @ViewData["ddlColumnList"] as List<SelectListItem> , "Select Column", new { id = "ddlColumn" ,style="visibility: hidden;"})
+                                }
+                                else if (Convert.ToString(ViewData["dashId"]) == "30")
+                                {
+                                    @Html.DropDownListFor(m => m.NutritionList, @ViewData["ddlColumnList"] as List<SelectListItem> , "Select Column", new {id = "ddlColumn" ,style="visibility: hidden;"})
+
+                                }
+                                else if (Convert.ToString(ViewData["dashId"]) == "40")
+                                {
+                                    @Html.DropDownListFor(m => m.NutritionList, @ViewData["ddlColumnList"] as List<SelectListItem> , "Select Column", new {id = "ddlColumn" ,style="visibility: hidden;"})
+
+                                }
+                                else if (Convert.ToString(ViewData["dashId"]) == "50")
+                                {
+                                    @Html.DropDownListFor(m => m.StoreList, @ViewData["ddlColumnList"] as List<SelectListItem> , "Select Column", new {id = "ddlColumn" ,style="visibility: hidden;"})
+
+                                }
+                            }
+
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+            <ul class="filter-list">
+                <li class="filter-list-item dropdown-filter-select">
+                    <div id="tdAscDesc" style="display:none;">
+                        <select name="isCompleted" id="ddlAscDesc" style="width: 100px;height:28px;border:1px solid var(--color-neutral-4);background:#fff;text-align:left;padding:0;" class="edit-dropdown default-button dropdown-toggle">
+                            @foreach (var option in new[]
+                            {
+                            new { Value = "asc", Text = "Asc" },
+                            new { Value = "desc", Text = "Desc" }
+                                            })
+                            {
+                                <option value="@option.Value">@option.Text</option>
+                            }
+
+                        </select>
+                    </div>
+            </ul>
+            <div class="skl-plus-icon">
+                <button type="button" id="btnAddSortToBasket" class="main-btn primary-btn btn-hover primary-btn-outline" style="display:none; position:absolute; right:5px; top:4px;">
+                    <i class="icon-plus"></i>
+                </button>
+            </div><!---->
+        </div>
+    </div>
+</div>
+<div class="form-group d-flex skl" style="padding:0;">
+    <div class="filters- wrapper">
+        <ul id="filters">
+            @foreach (var item in SessionHelper.GetBasket(HttpContextAccessor))
+            {
+                var valueStr = item.Value is string[] stringArray && stringArray.Length > 1
+                ? string.Join(", ", stringArray)
+                : item.Value is string[] stringSingle && stringSingle.Length == 1
+                ? stringSingle[0]
+                : item.Value.ToString();
+                <li>
+                    <span>@item.Field</span>
+                    <span>:</span>
+                    <span style='display: none;'>@valueStr</span>
+                    <span style='display: none;'>@item.Type</span>
+                    @*@if (item.Value is string[] && item.Value.Length == 1)
+                {
+                <span>@item.Value[0]</span>
+                <span>
+                <form method="post">
+                <input type="hidden" id="rowField"  name="Field" value="@item.Field" />
+                <input type="hidden" id="rowField" name="Value" value="@item.Value[0]" />
+                <button type="button" class="btn btn-outline-secondary" onclick="removeInternalItem(this)"><span class='bi bi-x'></span></button>
+                </form>
+
+                </span>
+                }
+                else
+                {
+                foreach(var internalItem in item.Value)
+                {
+                <span>@internalItem</span>
+                <span>
+                <form method="post">
+                <input type="hidden" id="rowField" name="Field" value="@item.Field" />
+                <input type="hidden" id="rowField" name="Value" value="@internalItem" />
+                <button type="button" class="btn btn-outline-secondary" onclick="removeInternalItem(this)"><span class='bi bi-x'></span></button>
+                </form>
+
+                </span>
+                }
+
+                }*@
+                    @foreach (var internalItem in item.Value)
+                    {
+                        <span>
+                            <form method="post">
+                                <input type="hidden" id="rowField" name="Field" value="@item.Field" />
+                                <input type="hidden" id="rowValue" name="Value" value="@internalItem" />
+                                <input type="hidden" id="rowType" name="Type" value="@item.Type" />
+                                <button type="button" class="main-btn delete-btn-outline btn-hover filtering d-flex align-items-center" onclick="removeInternalItem(this)" class='action-edit' data-toggle="tooltip" data-placement="bottom" title="Delete">
+                                    <span>@internalItem</span>
+                                </button>
+                            </form>
+                        </span>
+                    }
+                    <span>
+                        <form method="post">
+                            <input type="hidden" id="rowField" name="Field" value="@item.Field" />
+                            <input type="hidden" id="rowField" name="Value" value="@item.Value" />
+                            <button type="button" class="main-btn secondary-btn-outline btn-hover d-flex align-items-center"
+                                    onclick="removeItem(this)" class='action-edit' data-toggle="tooltip" data-placement="bottom" title="Delete all">
+                                <i class="icon-file-list-times"></i>
+                            </button>
+                        </form>
+                    </span>
+                </li>
+
+
+            }
+        </ul>
+
+    </div><!--/filters-wrapper-->
+
+</div><!--/dropdown-filter-wrapper-->
+
+
+<hr style="margin: 9px 0" />
+
+
+
+<div class="form-group">
+    <ul class="filter-btn-group f-14">
+        @if (Convert.ToString(ViewData["dashId"]) == "30")
+        {
+            <li><a class="main-btn primary-btn-outline btn-hover d-flex align-items-center" asp-action="Create"><i class="icon-plus"></i> Προσθήκη</a></li>
+            <li><div class="vertical-seperator"></div></li>
+        }
+        <li> <button type="button" class="main-btn primary-btn-outline btn-hover d-flex align-items-center" onclick="search(this)"><i class="icon-file-list-search mr-10"></i> Αναζήτηση </button> </li>
+        <li><div class="vertical-seperator"></div></li>
+        <li> <a asp-action="Index" class="main-btn secondary-btn-outline btn-hover d-flex align-items-center" onclick="clearBasket(this)"><i class="icon-file-list-times mr-10"></i> Καθαρισμός</a> </li>
+    </ul>
+</div>
+

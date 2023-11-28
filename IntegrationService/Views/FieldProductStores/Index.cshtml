@@ -1,0 +1,146 @@
+﻿@model IntegrationService.Models.PagedResult<FieldProductStoreViewModel>
+@using IntegrationService.ViewModels.FieldProductStores;
+@using IntegrationService.ViewModels.FieldProductsViewModels;
+@using NonFactors.Mvc.Grid;
+@using System.Data;
+@using PagedList.Core.Mvc
+@using Newtonsoft.Json;
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "Είδη/Κατάστημα";
+    ViewData["dashId"] = "20";
+    ViewBag.BodyClass = "field-product-table";
+}
+
+
+<div class="card-body">
+    <div class="row">
+        <div class="col-md-4">
+            <h2 class="card-title">Είδη/Κατάστημα</h2>
+        </div>
+    </div>
+    @{
+        var ddlFieldsList = new List<SelectListItem>();
+        ddlFieldsList.Add(new SelectListItem { Text = "Sku", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 10,\"Group\" : \"Entity\"" + "}" });
+        ddlFieldsList.Add(new SelectListItem { Text = "Title", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 10,\"Group\" : \"FreeText\"" + "}" });
+        ddlFieldsList.Add(new SelectListItem { Text = "WarehouseID", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 10,\"Group\" : \"Entity\"" + "}" });
+        ddlFieldsList.Add(new SelectListItem { Text = "ModifiedOn", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 10,\"Group\" : \"DatePicker\"" + "}" });
+        ddlFieldsList.Add(new SelectListItem { Text = "Efood", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 40,\"Group\" : \"Channel\"" + "}" });
+        ddlFieldsList.Add(new SelectListItem { Text = "Digital", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 40,\"Group\" : \"Channel\"" + "}" });
+        ddlFieldsList.Add(new SelectListItem { Text = "IsPublished", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 10,\"Group\" : \"Bool\"" + "}" });
+        var ddlDynamicFields = Model.Results.SelectMany(x => x.Fields).OrderBy(x => x.Order).Select(x => new SelectListItem { Text = x.FieldName, Value = "{" + $"\"Id\" : \"{(x.FieldId ?? Guid.Empty).ToString()}\",\"Type\" : 20,\"Group\" : \"{x.DomGroupDesc}\"" + "}" }).GroupBy(x => x.Value).Select(g => g.First());
+        ddlFieldsList.AddRange(ddlDynamicFields);
+    }
+
+    @{
+        var ddlColumnList = new List<SelectListItem>();
+        ddlColumnList.Add(new SelectListItem { Text = "Sku", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 30,\"Group\" : \"Sort\"" + "}" });
+        ddlColumnList.Add(new SelectListItem { Text = "WarehouseID", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 30,\"Group\" : \"Sort\"" + "}" });
+        ddlColumnList.Add(new SelectListItem { Text = "IsPublished", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 30,\"Group\" : \"Sort\"" + "}" });
+        var ddlColumnDynamicFields = Model.Results.SelectMany(x => x.Fields).OrderBy(x => x.Order).Select(x => new SelectListItem { Text = x.FieldName, Value = "{" + $"\"Id\" : \"{(x.FieldId ?? Guid.Empty).ToString()}\",\"Type\" : 50,\"Group\" : \"Sort\"" + "}" }).GroupBy(x => x.Value).Select(g => g.First());
+        ddlColumnList.AddRange(ddlColumnDynamicFields);
+    }
+
+    @*add partial for the filters and sort fields*@
+    @await Html.PartialAsync("~/Views/Shared/_FilterSortPartial.cshtml",new IntegrationService.ViewModels.PartialViewModel() ,  new ViewDataDictionary(ViewData) {
+    {"ddlFieldsList", ddlFieldsList},
+    {"ddlColumnList", ddlColumnList},
+    })
+
+    <div class="table-responsive sticky-heads">
+        <table cellspacing="0" id="gvMain" style="width:100%;border-collapse:collapse;">
+            <tr class="GridViewScrollHeader" id="test_run">
+                <th class="fixed">Action</th>
+                <th class="fixed">Sku</th>
+                <th class="fixed">Title</th>
+                <th class="table-rest-values non-fixed">WarehouseID</th>
+                <th class="table-rest-values non-fixed">WarehouseName</th>
+                <th class="table-rest-values non-fixed">Modified On</th>
+                <th class="table-rest-values non-fixed">Is Published</th>
+
+                @foreach (var channelcolumn in Model.Results.SelectMany(x => x.Channels).OrderBy(x => x.ChannelId).GroupBy(x => x.ChannelName).Select(g => g.First()))
+                {
+                    <th class="table-rest-values non-fixed">@channelcolumn.ChannelName</th>
+                }
+                @foreach (var fieldcolumn in Model.Results.SelectMany(x => x.Fields).OrderBy(x => x.Order).GroupBy(x => x.FieldName).Select(g => g.First()))
+                {
+                    <th class="table-rest-values non-fixed">@fieldcolumn.FieldName</th>
+                }
+            </tr>
+
+            @foreach (var item in Model.Results)
+            {
+                <tr class="GridViewScrollItem">
+                    <td class="fixed">
+                        <a href='FieldProductStores/Edit/{@item.ProductStoreId}' class='action-edit' data-tooltip='Edit' data-placement='right'>
+                            <i class='icon-edit'></i>
+                            <span class='visually-hidden'>Edit</span>
+                        </a>
+                    </td>
+                    <td class="fixed">@item.Sku</td>
+                    <td class="fixed">@item.Title</td>
+                    <td class="fixed">@item.WarehouseID</td>
+                    <td class="table-rest-values">@item.WarehouseName</td>
+                    <td class="table-rest-values">@item.ModifiedOn.ToString("yyyy-MM-dd HH:mm")</td>
+                    @*@TimeZoneInfo.ConvertTime(item.ModifiedOn,  TimeZoneInfo.Utc,TimeZoneInfo.FindSystemTimeZoneById("Europe/Athens")).ToString("yyyy-MM-dd HH:mm")*@
+                    <td class="table-rest-values">@item.IsPublished</td>
+
+                    @foreach (var channelcolumn in Model.Results.Where(x => x.Sku == item.Sku && x.WarehouseID == item.WarehouseID).SelectMany(x => x.Channels).OrderBy(x => x.ChannelId).GroupBy(x => x.ChannelName).Select(g => g.First()))
+                    {
+                        <td class="table-rest-values">@channelcolumn.Value</td>
+                    }
+                    @foreach (var fieldcolumn in Model.Results.Where(x => x.Sku == item.Sku && x.WarehouseID == item.WarehouseID).SelectMany(x => x.Fields).OrderBy(x => x.Order).GroupBy(x => x.FieldName).Select(g => g.First()))
+                    {
+                        <td class="table-rest-values">@fieldcolumn.Value</td>
+                    }
+                </tr>
+            }
+        </table>
+    </div><!--/table-responsive-->
+    @if (Model.EndPage > 1)
+    {
+
+        <ul class="pagination">
+            @if (Model.CurrentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" @*onclick="retrieve(1)" id="pageLink" *@
+                       href="@Url.Action("Index", new { page = 1 , sortOrder = @ViewData["SkuSortParm"], searchString = @ViewData["CurrentFilter"]})">Αρχή</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" @* onclick="retrieve(@Model.CurrentPage -1)" id="pageLink" *@
+                       href="@Url.Action("Index", new { page = Model.CurrentPage - 1 , sortOrder = @ViewData["SkuSortParm"], searchString = @ViewData["CurrentFilter"]})">Προηγούμενο</a>
+                </li>
+            }
+
+            @for (var page1 = Model.StartPage; page1 <= Model.EndPage; page1++)
+            {
+                <li class="@(page1 == Model.CurrentPage ? "page-item active" : "page-item")">
+                    <a class="page-link" @*onclick="retrieve(@page1)" id="pageLink"*@
+                       href="@Url.Action("Index", new { page = page1, sortOrder = @ViewData["SkuSortParm"], searchString = @ViewData["CurrentFilter"]})">@page1</a>
+                </li>
+            }
+
+            @if (Model.CurrentPage < Model.PageCount)
+            {
+                <li class="page-item">
+                    <a class="page-link" @*onclick="retrieve(@Model.CurrentPage + 1)" id="pageLink" *@
+                       href="@Url.Action("Index", new { page = Model.CurrentPage + 1 , sortOrder = @ViewData["SkuSortParm"], searchString = @ViewData["CurrentFilter"]})">Επόμενο</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" @*onclick="retrieve(@Model.PageCount)" id="pageLink" *@
+                       href="@Url.Action("Index", new { page = Model.PageCount, sortOrder = @ViewData["SkuSortParm"], searchString = @ViewData["CurrentFilter"]})">Tελευταίο</a>
+                </li>
+            }
+        </ul>
+
+
+    }
+
+</div><!--/CARD-BODY-->
+
+
+@section Scripts {
+    @await Html.PartialAsync("~/Views/Shared/_FilterShortScriptsPartial.cshtml")
+}

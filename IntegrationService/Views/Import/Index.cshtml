@@ -1,0 +1,27 @@
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="card-body">
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="card-title">Import File</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col mt-20 mb-50">
+
+
+            <form asp-controller="Import" asp-action="Index" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" class="form-control" multiple />
+                <button type="submit" class="main-btn primary-btn btn-hover d-inline-flex align-items-center gap-2 mt-30 mb-20"><i class="icon-upload"></i> Upload</button>
+            </form>
+
+
+        </div><!--/col-->
+    </div><!--/row-->
+</div><!--/CARD-BODY-->

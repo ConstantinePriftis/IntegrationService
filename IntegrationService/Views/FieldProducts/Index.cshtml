@@ -1,0 +1,163 @@
+﻿@model IntegrationService.Models.PagedResult<FieldProductViewModel>
+@using IntegrationService.ViewModels.FieldProductsViewModels;
+@using NonFactors.Mvc.Grid;
+@using System.Data;
+@using PagedList.Core.Mvc
+@using Newtonsoft.Json;
+@using System.Globalization;
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+	ViewData["Title"] = "Είδη";
+	ViewData["dashId"] = "10";
+	ViewBag.BodyClass = "field-product-table";
+
+}
+
+<div class="card-body">
+<div class="row">
+	<div class="col-md-4">
+		<h2 class="card-title">Είδη</h2>
+	</div>
+</div>
+
+
+
+
+
+
+@{
+	var ddlFieldsList = new List<SelectListItem>();
+	ddlFieldsList.Add(new SelectListItem { Text = "Sku", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 10,\"Group\" : \"Entity\"" + "}" });
+	ddlFieldsList.Add(new SelectListItem { Text = "Title_Import", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 10,\"Group\" : \"FreeText\"" + "}" });
+	ddlFieldsList.Add(new SelectListItem { Text = "Description_Import", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 10,\"Group\" : \"FreeText\"" + "}" });
+	ddlFieldsList.Add(new SelectListItem { Text = "ModifiedOn", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 10,\"Group\" : \"DatePicker\"" + "}" });
+    ddlFieldsList.Add(new SelectListItem { Text = "IsCompleted", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 10,\"Group\" : \"Bool\"" + "}" });
+		var ddlDynamicFields = Model.Results.SelectMany(x => x.Fields).OrderBy(x => x.Order).Select(x => new SelectListItem { Text = x.FieldName, Value = "{" + $"\"Id\" : \"{(x.FieldId ?? Guid.Empty).ToString()}\",\"Type\" : 20,\"Group\" : \"{x.DomGroupDesc}\"" + "}" }).GroupBy(x => x.Value).Select(g => g.First());
+	ddlFieldsList.AddRange(ddlDynamicFields);
+}
+
+@{
+	var ddlColumnList = new List<SelectListItem>();
+	ddlColumnList.Add(new SelectListItem { Text = "Sku", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 30,\"Group\" : \"Sort\"" + "}" });
+	ddlColumnList.Add(new SelectListItem { Text = "Title_Import", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 30,\"Group\" : \"Sort\"" + "}" });
+	ddlColumnList.Add(new SelectListItem { Text = "Description_Import", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 30,\"Group\" : \"Sort\"" + "}" });
+	ddlColumnList.Add(new SelectListItem { Text = "IsCompleted", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 30,\"Group\" : \"Sort\"" + "}" });
+		var ddlColumnDynamicFields = Model.Results.SelectMany(x => x.Fields).OrderBy(x => x.Order).Select(x => new SelectListItem { Text = x.FieldName, Value = "{" + $"\"Id\" : \"{(x.FieldId ?? Guid.Empty).ToString()}\",\"Type\" : 50,\"Group\" : \"Sort\"" + "}" }).GroupBy(x => x.Value).Select(g => g.First());
+	ddlColumnList.AddRange(ddlColumnDynamicFields);
+}
+
+
+@*add partial for the filters and sort fields*@
+@await Html.PartialAsync("~/Views/Shared/_FilterSortPartial.cshtml", new IntegrationService.ViewModels.PartialViewModel(),  new ViewDataDictionary(ViewData) {
+	{ "ddlFieldsList", ddlFieldsList },
+	{"ddlColumnList", ddlColumnList}
+})
+
+
+
+		<div class="table-responsive sticky-heads">
+			<table cellspacing="0" id="gvMain" style="width:100%;border-collapse:collapse;">
+				<tr class="GridViewScrollHeader">
+					<th class="fixed">Action</th>
+					<th class="fixed">Sku</th>
+					<th class="fixed">Title_Import</th>
+					<th class="table-rest-values non-fixed">Status</th>
+					<th class="table-rest-values non-fixed">Step</th>
+					<th class="table-rest-values non-fixed">Description_Import</th>
+					<th class="table-rest-values non-fixed">Modified On</th>
+					<th class="table-rest-values non-fixed">Is Completed</th>
+					@foreach (var fieldcolumn in Model.Results.SelectMany(x => x.Fields).OrderBy(x => x.Order).GroupBy(x => x.FieldName).Select(g => g.First()))
+					{
+						<th class="table-rest-values non-fixed">
+							@fieldcolumn.FieldName
+					</th>
+					if (@fieldcolumn.FieldName == "ProductCategoryID")
+					{
+						<th class="table-rest-values">
+							Description_Category
+						</th>
+					}
+				}
+				</tr>
+
+				@foreach (var item in Model.Results)
+				{
+					<tr class="GridViewScrollItem">
+						<td class="fixed">
+							<a href='FieldProducts/Edit/{@item.ProductId}' class='action-edit' data-tooltip='Edit' data-placement='right'>
+								<i class='icon-edit'></i>
+								<span class='visually-hidden'>Edit</span>
+							</a>
+						</td>
+						<td class="fixed">@item.Sku</td>
+						<td class="fixed">@item.Title_Import</td>
+						<td class="table-rest-values">@item.Status</td>
+						<td class="table-rest-values">@item.Step</td>
+						<td class="table-rest-values">@item.Description_Import</td>
+						<td class="table-rest-values">@item.ModifiedOn.ToString("yyyy-MM-dd HH:mm")</td>
+						<td class="table-rest-values">@item.IsCompleted</td>
+						@foreach (var fieldcolumn in Model.Results.Where(x => x.Sku == item.Sku).SelectMany(x => x.Fields).OrderBy(x => x.Order).GroupBy(x => x.FieldName).Select(g => g.First()))
+						{
+						<td class="table-rest-values">@fieldcolumn.Value</td>
+						if (@fieldcolumn.FieldName == "ProductCategoryID")
+						{
+@*							<td class="table-rest-values">@item.Description_Category</td>
+*@						}
+						}
+					</tr>
+				}
+       
+			</table>
+		</div>
+		<div>
+			@if (Model.EndPage > 1)
+			{
+				<ul class="pagination">
+					@if (Model.CurrentPage > 1)
+					{
+						<li class="page-item">
+							<a class="page-link" @*onclick="retrieve(1)" id="pageLink" *@
+							   href="@Url.Action("Index", new { page = 1 , sortOrder = @ViewData["SkuSortParm"], searchString = @ViewData["CurrentFilter"]})">Αρχή</a>
+						</li>
+						<li class="page-item">
+							<a class="page-link" @* onclick="retrieve(@Model.CurrentPage -1)" id="pageLink" *@
+							   href="@Url.Action("Index", new { page = Model.CurrentPage - 1 , sortOrder = @ViewData["SkuSortParm"], searchString = @ViewData["CurrentFilter"]})">Προηγούμενο</a>
+						</li>
+					}
+
+					@for (var page1 = Model.StartPage; page1 <= Model.EndPage; page1++)
+					{
+						<li class="@(page1 == Model.CurrentPage ? "page-item active" : "page-item")">
+							<a class="page-link" href="@Url.Action("Index", new { page = page1, sortOrder = @ViewData["SkuSortParm"], searchString = @ViewData["CurrentFilter"]})">@page1</a>
+						</li>
+					}
+
+					@if (Model.CurrentPage < Model.PageCount)
+					{
+						<li class="page-item">
+							<a class="page-link" href="@Url.Action("Index", new { page = Model.CurrentPage + 1 , sortOrder = @ViewData["SkuSortParm"], searchString = @ViewData["CurrentFilter"]})">Επόμενο</a>
+						</li>
+						<li class="page-item">
+							<a class="page-link" href="@Url.Action("Index", new { page = Model.PageCount, sortOrder = @ViewData["SkuSortParm"], searchString = @ViewData["CurrentFilter"]})">Tελευταίο</a>
+						</li>
+					}
+				</ul>
+
+
+			}
+		</div>
+@section Scripts {
+	@await Html.PartialAsync("~/Views/Shared/_FilterShortScriptsPartial.cshtml")
+
+			<script>
+				$(document).ready(function () {
+					//const picker = new tempusDominus
+					//.TempusDominus(document.getElementById('datepicker'));
+
+				
+
+				});
+		</script>
+}
+

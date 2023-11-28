@@ -1,0 +1,148 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-IntegrationService-7DE3FCC6-ADD9-4B89-8EA3-71097DF7A537</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>False</Optimize>
+    <DebugType>full</DebugType>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Data\SqlClient\**" />
+    <Compile Remove="wwwroot\images\**" />
+    <Content Remove="Data\SqlClient\**" />
+    <Content Remove="wwwroot\images\**" />
+    <EmbeddedResource Remove="Data\SqlClient\**" />
+    <EmbeddedResource Remove="wwwroot\images\**" />
+    <None Remove="Data\SqlClient\**" />
+    <None Remove="wwwroot\images\**" />
+    <TypeScriptCompile Remove="wwwroot\images\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\css\gridmvc-bootstrap3.css" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\css\gridmvc-bootstrap3.min.css" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\css\gridmvc.css" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\css\gridmvc.min.css" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-ajax.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-ajax.min.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-ar.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-bg.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-ca.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-cs.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-da.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-de.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-es.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-eu.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-fa.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-fr.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-gl.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-hr.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-it.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-nb.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-nl.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-pt.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-ru.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-se.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-sl.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-sr.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-tr.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc-lang-uk.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc.js" />
+    <Content Remove="C:\Users\pkossiaras\.nuget\packages\gridmvccore\5.5.0\contentFiles\any\net6.0\Resources\js\gridmvc.min.js" />
+    <Content Remove="wwwroot\js\skeleton\mvc-grid.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.0" />
+    <PackageReference Include="bootstrap" Version="5.2.3" />
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
+    <PackageReference Include="EPPlus" Version="6.1.1" />
+    <PackageReference Include="FluentFTP" Version="45.2.0" />
+    <PackageReference Include="GridMvcCore" Version="5.5.0" />
+    <PackageReference Include="jQuery.UI.Core" Version="1.8.9" />
+    <PackageReference Include="jQuery.UI.Widgets.Datepicker" Version="1.8.9" />
+    <PackageReference Include="linq2db" Version="5.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.18" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.18" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.18" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.18">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.9.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.12" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.14" />
+    <PackageReference Include="NonFactors.Grid.Core.Mvc6" Version="7.1.0" />
+    <PackageReference Include="PagedList.Core.Mvc" Version="3.0.0" />
+    <PackageReference Include="Quartz" Version="3.5.0" />
+    <PackageReference Include="Quartz.AspNetCore" Version="3.5.0" />
+    <PackageReference Include="Quartz.Serialization.Json" Version="3.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\Migrations\" />
+    <Folder Include="Quartz\" />
+    <Folder Include="wwwroot\lib\NewFolder\" />
+    <Folder Include="ViewModels\ErrorViewModel\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Shared\MvcGrid\_Grid.cshtml" />
+    <None Include="Views\Shared\MvcGrid\_Pager.cshtml" />
+    <None Include="wwwroot\fonts\.DS_Store" />
+    <None Include="wwwroot\fonts\noto-sans\noto-sans-v27-latin_greek-ext-300.svg" />
+    <None Include="wwwroot\fonts\noto-sans\noto-sans-v27-latin_greek-ext-300.woff2" />
+    <None Include="wwwroot\fonts\noto-sans\noto-sans-v27-latin_greek-ext-600.svg" />
+    <None Include="wwwroot\fonts\noto-sans\noto-sans-v27-latin_greek-ext-600.woff2" />
+    <None Include="wwwroot\fonts\noto-sans\noto-sans-v27-latin_greek-ext-700.svg" />
+    <None Include="wwwroot\fonts\noto-sans\noto-sans-v27-latin_greek-ext-700.woff2" />
+    <None Include="wwwroot\fonts\noto-sans\noto-sans-v27-latin_greek-ext-800.svg" />
+    <None Include="wwwroot\fonts\noto-sans\noto-sans-v27-latin_greek-ext-800.woff2" />
+    <None Include="wwwroot\fonts\noto-sans\noto-sans-v27-latin_greek-ext-regular.svg" />
+    <None Include="wwwroot\fonts\noto-sans\noto-sans-v27-latin_greek-ext-regular.woff2" />
+    <None Include="wwwroot\js\core\.DS_Store" />
+    <None Include="wwwroot\js\core\libs.min.js" />
+    <None Include="wwwroot\js\mvc-grid\mvc-grid.js" />
+    <None Include="wwwroot\js\skeleton\mvc-grid.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

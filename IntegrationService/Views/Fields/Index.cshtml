@@ -1,0 +1,133 @@
+﻿@model IEnumerable<FieldViewModel>
+@using NonFactors.Mvc.Grid;
+@using IntegrationService.ViewModels.FieldViewModels;
+@{
+    ViewData["Title"] = "Παραμετρικά Πεδία";
+}
+
+<div class="card-body">
+    <h2 class="card-title">Παραμετρικά Πεδία</h2>
+    <a class="main-btn primary-btn btn-hover d-inline-flex align-items-center gap-2 mt-20 mb-20" asp-action="Create"><i class="icon-plus"></i> Προσθήκη</a>
+    <div class="row">
+        <div class="col mt-10 mb-50">
+
+
+
+
+
+            <div class="table-responsive p-1">
+                @*<div class="container">*@
+                @(
+                    Html
+                    .Grid(Model)
+                    .Build(columns =>
+                    {
+                        columns.Add(model => model.Name).Titled("Name").Filterable(true);
+                        columns.Add(model => $"<text><div class='edit' data-id='{model.Id}' data-propertyname=''>{model.Type}</div></text>").Encoded(false).Titled("Type");
+                        columns.Add(model => model.IsEnabled).Titled("IsEnabled").Filterable(true);
+                        //columns.Add(model => model.Channels).Titled("Channels").Filterable(true);
+                        //columns.Add(model => model.Date).Titled("Date").UsingFilterOptions();
+                        @* foreach(var s in Enumerable.Range(0, 10))
+                {
+                columns.Add(model => model.Date).Titled("Date").UsingFilterOptions();
+                }*@
+                    }).Using(GridFilterMode.Row)
+                    .Empty("No data found")
+                    .Sortable()
+                    .Pageable(pager =>
+                    {
+                        pager.PageSizes = new Dictionary<Int32, String>
+                {
+                @*{ 0, "All" },
+                { 2, "2" },*@
+                { 4, "4" },
+                { 6, "6" },
+                { 10, "10" }
+                };
+                        pager.ShowPageSizes = true;
+                        pager.PagesToDisplay = 3;
+                        pager.CurrentPage = 1;
+                        pager.RowsPerPage = 10;
+                    })
+                    )
+            </div>
+            @*@section scripts{
+            <script src="https://www.appelsiini.net/download/jquery.jeditable.js"></script>
+            <script>
+            $(document).ready(function () {
+            var oldValue = '';
+            $('.edit').editable('/home/saveuser', {
+            cssclass: 'jeditForm',
+            tooltip: 'click to edit me...',
+            width: 'none',
+            height: 'none',
+            onsubmit: function (settings, original) {
+            oldValue = original.revert;
+            },
+            submitdata: function () {
+            return {
+            id: $(this).data('id'),
+            PropertyName: $(this).data('propertyname')
+            }
+            },
+            callback: function (value, settings) {
+            var jsonData = $.parseJSON(value);
+            if (jsonData.status) {
+            $(this).text(jsonData.value);
+            }
+            else {
+            $(this).text(oldValue);
+            }
+            }
+            })
+
+            $('.editSelect').editable('/home/saveuser', {
+            cssclass: 'jeditForm',
+            tooltip: 'click to edit me...',
+            width: 'none',
+            height: 'none',
+            type: 'select',
+            submit: 'Ok',
+            loadurl: '/home/GetUserRoles',
+            loaddata: function () {
+            return { id: $(this).data('id') }
+            },
+            onsubmit: function (settings, original) {
+            oldValue = original.revert;
+            },
+            submitdata: function () {
+            return {
+            id: $(this).data('id'),
+            PropertyName: $(this).data('propertyname')
+            }
+            },
+            callback: function (value, settings) {
+            var jsonData = $.parseJSON(value);
+            if (jsonData.status) {
+            $(this).text(jsonData.value);
+            }
+            else {
+            $(this).text(oldValue);
+            }
+            }
+            })
+
+            $('.editSelect').click(function () {
+            $('select', this).addClass('form-control pull-left w100');
+            $('button', this).addClass('btn btn-sm btn-success margin10')
+            })
+            })
+            </script>
+            }*@
+
+
+
+
+
+
+        </div><!--/col-->
+    </div><!--/row-->
+</div><!--/CARD-BODY-->
+
+
+

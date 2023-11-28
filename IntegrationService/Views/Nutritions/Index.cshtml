@@ -1,0 +1,117 @@
+﻿@model IntegrationService.Models.PagedResult<NutritionViewModel>
+@using IntegrationService.ViewModels.Nutrition
+@using NonFactors.Mvc.Grid;
+@using System.Data;
+@using PagedList.Core.Mvc
+@using Newtonsoft.Json;
+@using System.Globalization;
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "Διατροφικά Χαρακτηριστικά";
+    ViewData["dashId"] = "30";
+    ViewBag.BodyClass = "nutritions-table";
+}
+<div class="card-body">
+    <div class="row">
+        <div class="col-md-4">
+            <h2 class="card-title">Διατροφικά Χαρακτηριστικά</h2>
+        </div>
+    </div>
+
+@{
+    var ddlFieldsList = new List<SelectListItem>();
+    ddlFieldsList.Add(new SelectListItem { Text = "Sku", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 10,\"Group\" : \"Entity\"" + "}" });
+    ddlFieldsList.Add(new SelectListItem { Text = "Title", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 10,\"Group\" : \"FreeText\"" + "}" });
+}
+
+@{
+    var ddlColumnList = new List<SelectListItem>();
+    ddlColumnList.Add(new SelectListItem { Text = "Sku", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 30,\"Group\" : \"Sort\"" + "}" });
+    ddlColumnList.Add(new SelectListItem { Text = "Title", Value = "{" + $"\"Id\" : \"{Guid.Empty.ToString()}\",\"Type\" : 30,\"Group\" : \"Sort\"" + "}" });
+}
+
+@*add partial for the filters and sort fields*@
+@await Html.PartialAsync("~/Views/Shared/_FilterSortPartial.cshtml", new IntegrationService.ViewModels.PartialViewModel(),  new ViewDataDictionary(ViewData) {
+	{ "ddlFieldsList", ddlFieldsList },
+	{"ddlColumnList", ddlColumnList}
+})
+                        <div class="table-responsive sticky-heads">
+                            <table cellspacing="0" id="gvMain" style="border-collapse:collapse;">
+                                <tr class="GridViewScrollHeader">
+                                    <th class="fixed">Action</th>
+                                    <th class="fixed">Sku</th>
+                                    <th class="table-rest-values non-fixed">Title</th>
+                                </tr>
+                                @foreach (var item in Model.Results)
+                                {
+                                    <tr class="GridViewScrollItem">
+                                        <td class ="fixed">
+                        <ul class='action-btn-list'>
+                            <li>
+                                <a href='Nutritions/Edit/{@item.ProductId}' class='action-edit' data-tooltip='Επεξεργασία' data-placement='right'>
+                                    <i class='icon-edit'></i>
+                                    <span class='visually-hidden'>Edit</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href='Nutritions/Details/{@item.ProductId}' class='action-details' data-tooltip='Προβολή' data-placement='left'>
+                                    <i class='icon-details'></i>
+                                    <span class='visually-hidden'>View</span>
+                                </a>
+                            </li>
+                        </ul>
+                                            @*<a href='Nutritions/Edit/{@item.ProductId}' class='action-edit' data-tooltip='Edit' data-placement='top'> <i class='icon-edit'></i><span class='visually-hidden'>Edit</span></a>*@
+                                        </td>
+                                        <td class="fixed">@item.Sku</td>
+                                        <td class="table-rest-values">@item.Title</td>
+                                    </tr>
+                                }
+                            </table>    
+                        </div>
+
+                                    @if (Model.EndPage > 1)
+                                    {
+                                        @*<nav aria-label="Page navigation example">*@
+                                        <ul class="pagination">
+                                            @if (Model.CurrentPage > 1)
+                                            {
+                                                <li class="page-item">
+                                                    <a class="page-link" @*onclick="retrieve(1)" id="pageLink" *@
+                                                       href="@Url.Action("Index", new { page = 1 , sortOrder = @ViewData["SkuSortParm"], searchString = @ViewData["CurrentFilter"]})">First</a>
+                                                </li>
+                                                <li class="page-item">
+                                                    <a class="page-link" @* onclick="retrieve(@Model.CurrentPage -1)" id="pageLink" *@
+                                                       href="@Url.Action("Index", new { page = Model.CurrentPage - 1 , sortOrder = @ViewData["SkuSortParm"], searchString = @ViewData["CurrentFilter"]})">Previous</a>
+                                                </li>
+                                            }
+
+                                            @for (var page1 = Model.StartPage; page1 <= Model.EndPage; page1++)
+                                            {
+                                                <li class="@(page1 == Model.CurrentPage ? "page-item active" : "page-item")">
+                                                    <a class="page-link" @*onclick="retrieve(@page1)" id="pageLink"*@
+                                                       href="@Url.Action("Index", new { page = page1, sortOrder = @ViewData["SkuSortParm"], searchString = @ViewData["CurrentFilter"]})">@page1</a>
+                                                </li>
+                                            }
+
+                                            @if (Model.CurrentPage < Model.PageCount)
+                                            {
+                                                <li class="page-item">
+                                                    <a class="page-link" @*onclick="retrieve(@Model.CurrentPage + 1)" id="pageLink" *@
+                                                       href="@Url.Action("Index", new { page = Model.CurrentPage + 1 , sortOrder = @ViewData["SkuSortParm"], searchString = @ViewData["CurrentFilter"]})">Next</a>
+                                                </li>
+                                                <li class="page-item">
+                                                    <a class="page-link" @*onclick="retrieve(@Model.PageCount)" id="pageLink" *@
+                                                       href="@Url.Action("Index", new { page = Model.PageCount, sortOrder = @ViewData["SkuSortParm"], searchString = @ViewData["CurrentFilter"]})">Last</a>
+                                                </li>
+                                            }
+                                        </ul>
+
+
+                                    }
+</div>
+
+
+                        @section Scripts {  
+                            @await Html.PartialAsync("~/Views/Shared/_FilterShortScriptsPartial.cshtml")
+                        }

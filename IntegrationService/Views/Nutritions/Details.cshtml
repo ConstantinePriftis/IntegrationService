@@ -1,0 +1,95 @@
+﻿@model IEnumerable<IntegrationService.Models.Nutritions.Nutrition>
+@using IntegrationService.ViewModels.Nutrition;
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card-body">
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="card-title">Λεπτομέρειες</h2>
+        </div>
+        <div class="col-md-6 text-end">
+            <a asp-action="Index" class="return-link"><i class="icon-arrow-left-small"></i> <span>Επιστροφή</span></a>
+        </div>
+        <div class="form-group d-flex flex-row edit-cr sku">
+            <label asp-for="@Model.FirstOrDefault().Sku" class="control-label pseudo"></label>
+            @Model.FirstOrDefault().Sku
+            <span asp-validation-for="@Model.First().Sku" class="text-danger"></span>
+        </div>
+        <hr style="margin:9px 12px;" />
+        <form method="post" asp-action="Edit">
+            <div class="text-danger"></div>
+            <div class="form-group create">
+                <input id="Sku" name="Sku" asp-for="@Model.FirstOrDefault().Sku" hidden="hidden">
+            </div>
+
+            <label hidden="hidden" id="ModelCount" class="control-label">@Model.Count()</label>
+            <h4 id="ProductTitle"></h4>
+            <div class="form-group create">
+                <div class="table-responsive mt-20">
+                    <table id="NutritionsTable" class="table align-middle">
+                        <tr>
+                            <th>Title</th>
+                            <th>FirstCell</th>
+                            <th>SecondCell</th>
+                            <th>ThirdCell</th>
+                            <th>FourthCell</th>
+                            <th style="width:65px; text-align:center;">IsHighlight</th>
+                            <th style="width:65px; text-align:center;">Order<span style="color:red;margin-left:5px;"> *</span></th>
+                            <th style="width:65px; text-align:center;">IsBold</th>
+                            <th>Note</th>
+                        </tr>
+
+                        @for (var i = 0; i < Model.Count(); i++)
+                        {
+                            <tr>
+                                <td hidden="hidden"><input name="[@i].Id" asp-for="@Model.ToArray()[i].Id" readonly /></td>
+                                <td hidden="hidden"><input name="[@i].Sku" asp-for="@Model.ToArray()[i].Sku" readonly /></td>
+                                <td hidden="hidden"><input name="[@i].ProductId" asp-for="@Model.ToArray()[i].ProductId" readonly /></td>
+                                <td class='create-row detail'>
+                                    <span>
+                                        @Model.ToArray()[i].Title</span>
+                                </td>
+                                <td class='create-row detail'>
+                                    <span>@Model.ToArray()[i].FirstCell</span>
+                                </td>
+                                <td class='create-row detail'>
+                                    <span>@Model.ToArray()[i].SecondCell</span>
+                                </td>
+                                <td class='create-row detail'>
+                                    <span>@Model.ToArray()[i].ThirdCell</span>
+                                </td>
+                                <td class='create-row detail' style='width:150px;'>
+                                    <span>@Model.ToArray()[i].FourthCell</span>
+                                </td>
+                                <td class='create-row-highlight detail' style='width:65px; text-align:center;'>
+                                    <input class="form-check-input" onclick="return false;"  name="[@i].IsHighlight" asp-for="@Model.ToArray()[i].IsHighlight" value="true" />
+                                </td>
+                                <td class='create-row detail' style='width:65px;padding-left: 15px;'>
+                                    <span>@Model.ToArray()[i].Order</span>
+                                </td>
+                                <td class='create-row-highlight detail' style='width:65px;text-align:center;'>
+                                    <input class="form-check-input" onclick="return false;" name="[@i].IsBold" asp-for="@Model.ToArray()[i].IsBold" value="true" />
+                                </td>
+                                <td class='create-row detail'>
+                                    <span>@Model.ToArray()[i].Note</span>
+                                    </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+          
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+    }
+}

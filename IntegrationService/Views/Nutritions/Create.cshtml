@@ -1,0 +1,177 @@
+﻿@using IntegrationService.ViewModels.Nutrition;
+@model IEnumerable<NutritionViewModel>
+@{
+    ViewBag.BodyClass = "field-product-edit create";
+}
+
+
+
+
+<div class="card-body">
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="card-title">Create</h2>
+            <h6 class="card-subtitle mb-2">Nutrition</h6>
+        </div>
+        <div class="col-md-6 text-end"><a asp-action="Index" class="return-link"><i class="icon-arrow-left-small"></i> <span>Επιστροφή</span></a></div>
+    </div>
+
+    <div class="row">
+        <div class="col mt-20 mb-50">
+            <form method="post" asp-action="Create">
+
+                <div class="text-danger"></div>
+                <div class="form-group">
+                    <div class="nutritions-title-create">
+                        <select id="dropdownSearch" name="Sku"  class="btn btn-default dropdown-toggle select2-search"></select>
+                        <label id="ProductTitle" class="control-label pseudo"></label>
+                    </div>
+                    <div class="table-responsive mt-20">
+                        <table id="NutritionsTable" class="table align-middle">
+                            <tr>
+                                <th>Title</th>
+                                <th>FirstCell</th>
+                                <th>SecondCell</th>
+                                <th>ThirdCell</th>
+                                <th>FourthCell</th>
+                                <th>IsHighlight</th>
+                                <th>Order<span style="color:red;margin-left:5px;"> *</span></th>
+                                <th>IsBold</th>
+                                <th>Note</th>
+                            </tr>
+                            @foreach (var item in Model)
+                            {
+
+                            }
+                        </table>
+                    </div><!--table-responsive -->
+                </div><!--form-group -->
+                <div class="form-group">
+                    <ul class="filter-btn-group f-14">
+                        <ul class="filter-btn-group f-14">
+                            <li>
+                                <input class="main-btn primary-btn-outline btn-hover d-flex align-items-center" style="gap:5px;height:auto;" value="Αποθήκευση" type="submit">
+                                @*<i class="icon-plus"></i>*@
+                            </li>
+                        </ul>
+                        <li><div class="vertical-seperator"></div></li>
+                        <li>
+                            <button id="addRowBtn" class="create main-btn secondary-btn-outline btn-hover">
+                                <i class="icon-row"></i>Προσθήκη γραμμής</button></li>
+                    </ul>
+                </div>
+            </form>
+        </div><!--/col-->
+    </div><!--/row-->
+</div><!--/CARD-BODY-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@section Scripts {
+   @* <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>*@
+    @*<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>*@
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $('#dropdownSearch').select2({
+                minimumInputLength: 3,
+                placeholder: 'Select Product',
+                theme: "bootstrap4",
+                allowClear: true,
+                ajax: {
+                    url: '/Nutritions/GetProductsWithoutNutritions',
+                    contentType: "application/json; charset=utf-8",
+                    data: function (params) {
+                        var query =
+                        {
+                            term: params.term,
+                        };
+                        return query;
+                    },
+                    processResults: function (result) {
+                        return {
+                            results: $.map(result, function (item) {
+                                console.log(result);
+                                return {
+                                    id: item.value,
+                                    text: item.value
+                                };
+                            }),
+                        };
+                    }
+                }
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#dropdownSearch').change(function () {
+                var e = document.getElementById("dropdownSearch");
+                var value = e.value;
+                var text = e.options[e.selectedIndex].text;
+                $.ajax({
+                    url: '/FieldProducts/GetProductById' + "?sku=" + value,
+                    success: function (response) {
+                        //$('#myInput').val(response);
+                        var spanElement = document.getElementById("ProductTitle");
+                        spanElement.innerText = response;
+                    },
+                    error: function (xhr, status, error) {
+                        // Request failed
+                        console.log("Error: " + error);
+                    }
+                });
+
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            var CurrentNutritionIndex = 0;
+            // Get a reference to the button
+            var addRowBtn = $("#addRowBtn");
+
+            // Attach the click event listener
+            addRowBtn.click(function (e) {
+                e.preventDefault();
+
+                // Add a new row to the table
+                var table = $("#NutritionsTable");
+                var newRow = $("<tr></tr>");
+                var index = CurrentNutritionIndex;
+                newRow.append("<td class='create-row'><input name='[" + CurrentNutritionIndex + "].Title' id='Title' " + "></td>");
+                newRow.append("<td class='create-row'><input name='[" + CurrentNutritionIndex + "].FirstCell' id='FirstCell' " + "></td>");
+                newRow.append("<td class='create-row'><input name='[" + CurrentNutritionIndex + "].SecondCell' id='SecondCell' " + "></td>");
+                newRow.append("<td class='create-row'><input name='[" + CurrentNutritionIndex + "].ThirdCell' id='ThirdCell' " + "></td>");
+                newRow.append("<td class='create-row'><input name='[" + CurrentNutritionIndex + "].FourthCell' id='FourthCell' " + "></td>");
+                newRow.append("<td class=''><input class='form-check-input' type='checkbox' value='true' name='[" + CurrentNutritionIndex + "].IsHighlight' id='IsHighlight' " + "></td>");
+                newRow.append("<td class='create-row active'><input type='number' name='[" + CurrentNutritionIndex + "].Order' id='Order'  " + "></td>");
+                newRow.append("<td class=''><input class='form-check-input' type='checkbox' value='true'  name='[" + CurrentNutritionIndex + "].IsBold' id='IsBold'" + "></td>");
+                newRow.append("<td class='create-row'><input name='[" + CurrentNutritionIndex + "].Note' id='Note'" + "/></td>");
+                table.append(newRow);
+                CurrentNutritionIndex++;
+            });
+        });
+    </script>
+}
